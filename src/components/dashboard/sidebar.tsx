@@ -58,11 +58,11 @@ const primaryNavigation = [
     href: "/admin/wallet",
     icon: BanknoteIcon,
   },
-  {
-    label: "Tax",
-    href: "#",
-    icon: ReceiptTextIcon,
-  },
+  // {
+  //   label: "Tax",
+  //   href: "#",
+  //   icon: ReceiptTextIcon,
+  // },
   {
     label: "Leave",
     href: "#",
@@ -73,12 +73,12 @@ const primaryNavigation = [
     href: "/admin/teams",
     icon: Users2Icon,
   },
-  {
-    label: "Reports",
-    href: "#",
-    icon: FileBarChart2Icon,
-    badge: "3",
-  },
+  // {
+  //   label: "Reports",
+  //   href: "#",
+  //   icon: FileBarChart2Icon,
+  //   badge: "3",
+  // },
   {
     label: "Settings",
     href: "#",
