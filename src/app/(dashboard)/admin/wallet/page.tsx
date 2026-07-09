@@ -95,7 +95,7 @@ function WalletPage() {
   const user = useAtomValue(authUserAtom);
   const [page, setPage] = useState(1);
   const { data, isLoading, isError } = useGetBalance(user?.companyId as string);
-  const { data: transactions, isLoading: transactionsLoading, isError: transactionsError } = useGetPaymentHistory(user?.companyId as string, page, 10)
+  const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError } = useGetPaymentHistory(user?.companyId as string, page, 10)
   console.log('[WALLET BALANCE]', data?.data);
 
   return (
