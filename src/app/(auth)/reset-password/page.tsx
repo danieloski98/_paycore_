@@ -14,22 +14,16 @@ import { userTypeAtom } from '@/states/user-type-state'
 import { useAtom } from 'jotai'
 import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { SubmitHandler } from 'react-hook-form'
 import { toast } from 'sonner'
 
-function EmployeeLogin() {
+function ResetPassword() {
     const router = useRouter()
     const [, setUserType] = useAtom(userTypeAtom)
     const [successMessage, setSuccessMessage] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const { isPending, mutate: companyUserLogin, error } = useEmployeeLogin()
-
-
-    useEffect(() => {
-        setUserType("EMPLOYEE")
-    }, [setUserType])
-
     const { renderForm, register, handleSubmit, formState: { errors }, reset } = useForm({
         mode: 'onChange',
         resolver: employeeLoginSchema,
@@ -52,7 +46,7 @@ function EmployeeLogin() {
         companyUserLogin(payload, {
             onSuccess: (response) => {
                 console.log(response.data.message)
-                setUserType('EMPLOYEE')
+                setUserType('admin')
                 toast.success(successMessage || 'Log In successfully', {
                     position: "bottom-right",
                 })
@@ -84,19 +78,39 @@ function EmployeeLogin() {
                     {renderForm(<form onSubmit={handleSubmit(onSubmit)}>
 
                         <div className="flex flex-col gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="m@example.com"
-                                    required
-                                    className='h-10 text-sm font-medium tracking-wide rounded-sm outline-none focus-within:border-0 focus-within:outline-0'
-                                />
+                            <div className='flex flex-col gap-1'>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="password">New Password</Label>
+                                    <div className='relative'>
+                                        <Input
+                                            id="password"
+                                            type={showPassword ? "text" : "password"}
+                                            aria-invalid={Boolean(errors.password)}
+                                            required
+                                            placeholder='Enter your password'
+                                            className='h-10 rounded-sm outline-none focus-within:border-0 focus-within:outline-0'
+                                            {...register('password')}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2"
+                                            onClick={() => setShowPassword((prev) => !prev)}
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="h-4 w-4" />
+                                            ) : (
+                                                <Eye className="h-4 w-4" />
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                                {errors.password?.message ? (
+                                    <p className='text-xs text-destructive'>{String(errors.password.message)}</p>
+                                ) : null}
                             </div>
                             <div className='flex flex-col gap-1'>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password">Confirm New Password</Label>
                                     <div className='relative'>
                                         <Input
                                             id="password"
@@ -137,4 +151,4 @@ function EmployeeLogin() {
     )
 }
 
-export default EmployeeLogin
+export default ResetPassword

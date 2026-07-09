@@ -1,4 +1,4 @@
-export type GeneralResponse<T = any> = {
+export type GeneralResponse<T = unknown> = {
     success: boolean;
     message: string;
     data?: T;

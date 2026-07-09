@@ -2,27 +2,27 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-  @font-face {
-    font-family: Inter_Regular;
-    src: url('/fonts/Inter_28ptRegular.ttf') format('ttf');
-  }
+@font-face {
+  font-family: Inter_Regular;
+  src: url('/fonts/Inter_28pt-Regular.ttf') format('truetype');
+}
 
-  @font-face {
-    font-family: Inter_Medium;
-    src: url('/fonts/Inter_28ptMedium.ttf') format('ttf');
-  }
+@font-face {
+  font-family: Inter_Medium;
+  src: url('/fonts/Inter_28pt-Medium.ttf') format('truetype');
+}
 
-  @font-face {
-    font-family: Inter_Bold;
-    src: url('/fonts/Inter_28ptBold.ttf') format('ttf');
-  }
+@font-face {
+  font-family: Inter_Bold;
+  src: url('/fonts/Inter_28pt-Bold.ttf') format('truetype');
+}
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: "Inter_Regular", sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -138,9 +138,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
