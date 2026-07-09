@@ -15,7 +15,7 @@ function DashboardNavbar() {
           <div className="hidden min-w-0 md:block">
             <p className="text-sm font-semibold">Workspace</p>
           </div>
-          <div className="relative hidden w-full max-w-sm md:block">
+          <div className="relative hidden w-full max-w-xl min-w-sm md:block ml-6">
             <SearchIcon
               size={16}
               className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
