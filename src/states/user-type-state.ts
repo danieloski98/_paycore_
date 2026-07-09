@@ -1,4 +1,11 @@
-import { atom } from 'jotai';
+import { atomWithStorage, createJSONStorage } from 'jotai/utils';
 
-type USER_TYPE = 'admin' | 'employee' | 'user'; // user type based on login
-export const userTypeAtom = atom<USER_TYPE>('user');
+export type USER_TYPE = 'ADMIN' | 'EMPLOYEE' | 'USER'; // user type based on login
+
+const userTypeStorage = createJSONStorage<USER_TYPE>(() => localStorage);
+
+export const userTypeAtom = atomWithStorage<USER_TYPE>(
+  'paycore:user-type',
+  'USER',
+  userTypeStorage,
+);
