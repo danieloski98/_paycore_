@@ -1,4 +1,5 @@
-import React from "react"
+'use client';
+import React, { useState } from "react"
 import {
   ArrowDownLeftIcon,
   ArrowUpRightIcon,
@@ -21,6 +22,7 @@ import {
   CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -33,6 +35,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+import { DataTable } from "@/components/custom/data-table"
+import { columns } from "./transaction-columns"
+import { useAtomValue } from "jotai"
+import { authUserAtom } from "@/states/auth-user-state"
+import { useGetBalance, useGetPaymentHistory } from "@/hooks/use-wallet"
+import { Spinner } from "@/components/ui/spinner"
 
 const transactions = [
   {
@@ -84,6 +92,12 @@ const footerLinks = {
 }
 
 function WalletPage() {
+  const user = useAtomValue(authUserAtom);
+  const [page, setPage] = useState(1);
+  const { data, isLoading, isError } = useGetBalance(user?.companyId as string);
+  const { data: transactions, isLoading: transactionsLoading, isError: transactionsError } = useGetPaymentHistory(user?.companyId as string, page, 10)
+  console.log('[WALLET BALANCE]', data?.data);
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">
@@ -103,22 +117,30 @@ function WalletPage() {
               <CardDescription className="text-xs uppercase tracking-[0.18em] text-primary-foreground/70">
                 Available Balance
               </CardDescription>
-              <CardTitle className="text-4xl font-semibold md:text-5xl">
-                ₦ 12,450,200.00
-              </CardTitle>
+              {isLoading && <Spinner />}
+              {!isLoading && !isError && data && (
+                <CardTitle className="text-4xl font-semibold md:text-5xl">
+                  ₦ {data?.data?.data?.balance}
+                </CardTitle>
+              )}
+              {!isLoading && isError && (
+                <CardTitle>
+                  An Error occured while getting your balance
+                </CardTitle>
+              )}
             </CardHeader>
             <CardContent className="flex flex-wrap gap-3">
               <Button variant="secondary">
                 <PlusCircleIcon data-icon="inline-start" />
                 Fund Wallet
               </Button>
-              <Button
+              {/* <Button
                 variant="outline"
                 className="border-primary-foreground/20 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
               >
                 <LandmarkIcon data-icon="inline-start" />
                 Withdraw
-              </Button>
+              </Button> */}
             </CardContent>
           </Card>
 
@@ -182,87 +204,7 @@ function WalletPage() {
             </CardHeader>
 
             <CardContent className="px-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="px-4">Status</TableHead>
-                    <TableHead>Transaction Detail</TableHead>
-                    <TableHead>Reference</TableHead>
-                    <TableHead>Date &amp; Time</TableHead>
-                    <TableHead className="pr-4 text-right">Amount (₦)</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {transactions.map((transaction) => (
-                    <TableRow key={transaction.reference}>
-                      <TableCell className="px-4 align-top">
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "gap-1.5 border-0 px-0 py-0 font-medium shadow-none",
-                            transaction.status === "Success"
-                              ? "text-green-700"
-                              : "text-amber-700"
-                          )}
-                        >
-                          <CircleDotIcon
-                            data-icon="inline-start"
-                            className={cn(
-                              transaction.status === "Success"
-                                ? "fill-green-600 text-green-600"
-                                : "fill-amber-500 text-amber-500"
-                            )}
-                          />
-                          {transaction.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-start gap-3">
-                          <div
-                            className={cn(
-                              "mt-0.5 flex size-9 items-center justify-center rounded-full",
-                              transaction.type === "credit" && "bg-green-100 text-green-700",
-                              transaction.type === "debit" && "bg-rose-100 text-rose-700",
-                              transaction.type === "transfer" && "bg-muted text-muted-foreground"
-                            )}
-                          >
-                            {transaction.type === "credit" ? (
-                              <ArrowDownLeftIcon />
-                            ) : transaction.type === "debit" ? (
-                              <ArrowUpRightIcon />
-                            ) : (
-                              <WalletIcon />
-                            )}
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <p className="font-semibold">{transaction.title}</p>
-                            <p className="text-sm text-muted-foreground">{transaction.detail}</p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {transaction.reference}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        <div className="flex flex-col gap-1">
-                          <span>{transaction.date}</span>
-                          <span>{transaction.time}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell
-                        className={cn(
-                          "pr-4 text-right text-xl font-semibold",
-                          transaction.amount.startsWith("+")
-                            ? "text-green-600"
-                            : "text-foreground"
-                        )}
-                      >
-                        {transaction.amount}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <DataTable columns={columns} data={transactions} />
             </CardContent>
 
             <div className="flex flex-col gap-3 border-t px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -287,6 +229,7 @@ function WalletPage() {
             </div>
           </Card>
         </section>
+
       </div>
     </div>
   )
