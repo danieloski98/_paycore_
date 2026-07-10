@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {  useForgotPassword } from '@/hooks/use-auth'
+import { useForgotPassword } from '@/hooks/use-auth'
 import useForm from '@/hooks/use-form'
 import { ForgotPasswordFormValues, forgotPasswordSchema } from '@/lib/schemas'
 import { userTypeAtom } from '@/states/user-type-state'
@@ -15,7 +15,7 @@ import { SubmitHandler } from 'react-hook-form'
 import { toast } from 'sonner'
 
 const ForgotPassword = () => {
-    const [userType, ] = useAtom(userTypeAtom)
+    const [userType,] = useAtom(userTypeAtom)
     const [successMessage, setSuccessMessage] = useState('')
     const { isPending, mutate: companyUserLogin, error } = useForgotPassword()
     const { renderForm, register, handleSubmit, formState: { errors }, reset } = useForm({
@@ -27,7 +27,7 @@ const ForgotPassword = () => {
         },
     })
 
-    const serverError = error?.response?.data?.message ?? error?.message
+    const serverError = error?.message
 
     const onSubmit: SubmitHandler<ForgotPasswordFormValues> = (values) => {
         const payload: ForgotPasswordFormValues = {
@@ -41,7 +41,7 @@ const ForgotPassword = () => {
                 toast.success(successMessage || 'Request Sent', {
                     position: "bottom-right",
                 })
-                reset()  
+                reset()
             },
             onError: () => {
                 console.log("Server Error", serverError)
@@ -83,7 +83,7 @@ const ForgotPassword = () => {
                                     aria-invalid={Boolean(errors.email)}
                                     required
                                     className='h-10 text-sm font-medium tracking-wide rounded-sm outline-none focus-within:border-0 focus-within:outline-0'
-                                {...register('email')}
+                                    {...register('email')}
                                 />
                             </div>
                             <Button disabled={isPending} className='py-6 text-base cursor-pointer'>

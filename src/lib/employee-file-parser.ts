@@ -46,13 +46,14 @@ export const validateAndTransformEmployeeData = (
         const rowErrors: string[] = [];
 
         const employee: EmployeeType = {
-            // id: "",
+            id: "",
             firstName: "",
             lastName: "",
             email: "",
             phone: "",
             position: "",
             department: "",
+            picture: "",
             salary: 0,
             startDate: "",
         };
