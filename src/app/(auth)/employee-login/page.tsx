@@ -3,7 +3,7 @@
 "use client"
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
@@ -20,7 +20,7 @@ import { toast } from 'sonner'
 
 function EmployeeLogin() {
     const router = useRouter()
-    const [, setUserType] = useAtom(userTypeAtom)
+    const [,setUserType] = useAtom(userTypeAtom)
     const [successMessage, setSuccessMessage] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const { isPending, mutate: companyUserLogin, error } = useEmployeeLogin()
@@ -96,7 +96,10 @@ function EmployeeLogin() {
                             </div>
                             <div className='flex flex-col gap-1'>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password">Password</Label>
+                                    <div className='flex items-center justify-between'>
+                                        <Label htmlFor="password">Password</Label>
+                                        <Button variant={"ghost"} className='text-gray-500 text-xs tracking-wide text-right cursor-pointer' onClick={() => router.push('/forgot-password')}>Forgot Password?</Button>
+                                    </div>
                                     <div className='relative'>
                                         <Input
                                             id="password"

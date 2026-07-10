@@ -3,7 +3,7 @@
 "use client"
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Spinner } from '@/components/ui/spinner'
@@ -20,7 +20,7 @@ import { toast } from 'sonner'
 
 function ResetPassword() {
     const router = useRouter()
-    const [, setUserType] = useAtom(userTypeAtom)
+    const [userType] = useAtom(userTypeAtom)
     const [successMessage, setSuccessMessage] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const { isPending, mutate: companyUserLogin, error } = useEmployeeLogin()
@@ -46,13 +46,16 @@ function ResetPassword() {
         companyUserLogin(payload, {
             onSuccess: (response) => {
                 console.log(response.data.message)
-                setUserType('admin')
                 toast.success(successMessage || 'Log In successfully', {
                     position: "bottom-right",
                 })
                 reset()
                 // Redirect to employee dashboard
-                router.push('/employee/overview')
+                if (userType === "EMPLOYEE") {
+                    router.push('/employee/overview')
+                } else {
+                    router.push('/admin/overview')
+                }
             },
             onError: () => {
                 console.log("Server Error", serverError)

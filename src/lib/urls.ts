@@ -8,6 +8,10 @@ export const URLS = {
         forgot_password: '/user-auth/password-reset',
         verify_otp: ""
     },
+    employees:{
+        add_employee: '/employees',
+        upload_employees: '/employees/bulk'
+    },
     company: {
         create_company_account: (userId: string) => `/company/${userId}`
     }

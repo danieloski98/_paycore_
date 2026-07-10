@@ -48,6 +48,44 @@ export const companyUserSetupSchema = z.object({
     logo: z.string()
 });
 
+export const addEmployeeSchema = z.object({
+  firstName: z.string().trim().min(1, "First name is required"),
+  lastName: z.string().trim().min(1, "Last name is required"),
+  email: z
+    .string()
+    .trim()
+    .email("Enter a valid email"),
+
+  phone: z
+    .string()
+    .trim()
+    .min(1, "Phone number is required"),
+
+  position: z
+    .string()
+    .trim()
+    .min(1, "Position is required"),
+
+  department: z
+    .string()
+    .trim()
+    .min(1, "Department is required"),
+
+  salary: z.coerce
+    .number({message: "Salary must be a number"})
+    .positive("Salary must be greater than zero"),
+
+  startDate: z.string().min(1, "Start date is required"),
+});
+
+export const uploadEmployeesSchema = z.object({
+  employees: z.array(addEmployeeSchema).min(1, "Please upload at least one employee"),
+});
+
+export type AddEmployeeFormValues = z.infer<typeof addEmployeeSchema>;
+export type UploadEmployeesFormValues = z.infer<
+  typeof uploadEmployeesSchema
+>;
 export type CreateCompanyUserAccountFormValues = z.infer<typeof createCompanyUserAccountSchema>;
 export type CompanyUserLoginFormValues = z.infer<typeof companyUserLoginSchema>;
 export type EmployeeLoginFormValues = z.infer<typeof employeeLoginSchema>

@@ -4,19 +4,17 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useEmployeeLogin, useForgotPassword } from '@/hooks/use-auth'
+import {  useForgotPassword } from '@/hooks/use-auth'
 import useForm from '@/hooks/use-form'
 import { ForgotPasswordFormValues, forgotPasswordSchema } from '@/lib/schemas'
 import { userTypeAtom } from '@/states/user-type-state'
 import { useAtom } from 'jotai'
-import { ArrowLeft, ArrowRight, Lock } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import React, { useState } from 'react'
+import { ArrowRight, Lock } from 'lucide-react'
+import { useState } from 'react'
 import { SubmitHandler } from 'react-hook-form'
 import { toast } from 'sonner'
 
 const ForgotPassword = () => {
-    const router = useRouter()
     const [userType, ] = useAtom(userTypeAtom)
     const [successMessage, setSuccessMessage] = useState('')
     const { isPending, mutate: companyUserLogin, error } = useForgotPassword()
@@ -43,9 +41,7 @@ const ForgotPassword = () => {
                 toast.success(successMessage || 'Request Sent', {
                     position: "bottom-right",
                 })
-                reset()
-                // Redirect to employee dashboard
-                router.push('/verify-otp')
+                reset()  
             },
             onError: () => {
                 console.log("Server Error", serverError)
@@ -69,7 +65,7 @@ const ForgotPassword = () => {
                     <CardDescription className=' flex justify-center text-center w-full'>
                         <p className='w-3/4'>
 
-                            Enter your email address and we'll send
+                            Enter your email address and we&apos;ll send
                             you a 6-digit code to reset your
                             password.
                         </p>
