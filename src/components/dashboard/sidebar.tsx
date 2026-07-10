@@ -29,6 +29,59 @@ import { cn } from "@/lib/utils"
 import { useSetAtom } from "jotai"
 import { SidebarLinks } from "@/lib/constants"
 
+const primaryNavigation = [
+  {
+    label: "Overview",
+    href: "/admin/overview",
+    icon: LayoutDashboardIcon,
+  },
+  {
+    label: "Employees",
+    href: "#",
+    icon: UsersIcon,
+  },
+  {
+    label: "Payroll",
+    href: "#",
+    icon: CreditCardIcon,
+  },
+  {
+    label: "Payments",
+    href: "#",
+    icon: BriefcaseBusinessIcon,
+  },
+  {
+    label: "Wallet",
+    href: "/admin/wallet",
+    icon: BanknoteIcon,
+  },
+  // {
+  //   label: "Tax",
+  //   href: "#",
+  //   icon: ReceiptTextIcon,
+  // },
+  {
+    label: "Leave",
+    href: "#",
+    icon: FileTextIcon,
+  },
+  {
+    label: "Teams",
+    href: "/admin/teams",
+    icon: Users2Icon,
+  },
+  // {
+  //   label: "Reports",
+  //   href: "#",
+  //   icon: FileBarChart2Icon,
+  //   badge: "3",
+  // },
+  {
+    label: "Settings",
+    href: "#",
+    icon: SettingsIcon,
+  },
+]
 
 function Sidebar() {
   const pathname = usePathname()

@@ -25,6 +25,17 @@ function DashboardNavbar() {
           <div className="hidden min-w-0 md:block">
             <p className="text-2xl font-semibold">{activeItem?.label}</p>
           </div>
+          <div className="relative hidden w-full max-w-xl min-w-sm md:block ml-6">
+            <SearchIcon
+              size={16}
+              className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
+            />
+            <Input
+              aria-label="Search dashboard"
+              placeholder="Search employees or reports..."
+              className="pl-9"
+            />
+          </div>
         </div>
 
         <div className="flex items-center gap-2">

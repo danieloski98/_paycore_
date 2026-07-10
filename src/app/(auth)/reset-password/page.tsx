@@ -46,6 +46,7 @@ function ResetPassword() {
         companyUserLogin(payload, {
             onSuccess: (response) => {
                 console.log(response.data.message)
+                setUserType('USER')
                 toast.success(successMessage || 'Log In successfully', {
                     position: "bottom-right",
                 })
