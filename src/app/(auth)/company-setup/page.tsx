@@ -13,7 +13,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import ImageUpload from '@/components/ui/dropzone-images'
+import ImageUpload from '@/components/file-upload'
 import { companyIndustryTypes } from '@/lib/dummy'
 import { useRouter } from 'next/navigation'
 import { useAtom } from 'jotai'
@@ -26,6 +26,9 @@ import { SubmitHandler } from 'react-hook-form'
 import { toast } from 'sonner'
 import { CompanyUserSetupPayload } from '@/lib/auth/payload'
 import { useAuthUser } from '@/hooks/use-auth-user'
+import FileUpload from '@/components/file-upload'
+import { Upload } from 'lucide-react'
+import { IMAGE_ACCEPT } from '@/lib/constants'
 
 function CompanySetup() {
     const user = useAuthUser()
@@ -56,7 +59,7 @@ function CompanySetup() {
         setUserType("USER")
     }, [setUserType])
 
-    const serverError = error?.response?.data?.message ?? error?.message
+    const serverError = error?.message
 
     const onSubmit: SubmitHandler<CompanyUserSetupFormValues> = (values) => {
         const payload: CompanyUserSetupPayload = {
@@ -70,7 +73,6 @@ function CompanySetup() {
         setSuccessMessage('')
         company_user_setup({ userId: user?.id!, payload }, {
             onSuccess: (response) => {
-                console.log(response.data.message)
                 toast.success(successMessage || 'Setup Complated', {
                     position: "bottom-right",
                 })
@@ -105,7 +107,13 @@ function CompanySetup() {
                         <div className="flex flex-col gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="logo">Company Logo</Label>
-                                <ImageUpload
+
+                                <FileUpload
+                                    title="Upload Company Logo"
+                                    description="SVG, PNG or JPG (Max 2MB)"
+                                    icon={Upload}
+                                    accept={IMAGE_ACCEPT}
+                                    preview
                                     onUpload={(url) =>
                                         setValue("logo", url, {
                                             shouldValidate: true,

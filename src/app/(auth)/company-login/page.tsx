@@ -40,7 +40,7 @@ function CompanyLogin() {
     },
   })
 
-  const serverError = error?.response?.data?.message ?? error?.message
+  const serverError = error?.message
 
   const onSubmit: SubmitHandler<CompanyUserLoginFormValues> = (values) => {
     const payload: CompanyUserLoginFormValues = {
@@ -51,13 +51,12 @@ function CompanyLogin() {
     setSuccessMessage('')
     companyUserLogin(payload, {
       onSuccess: (response) => {
-        console.log(response.data.message);
         console.log('[USER DATA]', response?.data?.data);
         localStorage.setItem('token', (response?.data?.data as any)?.token as string);
         localStorage.setItem('user_data', JSON.stringify(response?.data?.data));
         setUserType('USER')
         setAuthUser(response?.data?.data! as AuthUser);
-        toast.success(successMessage || 'Account created successfully', {
+        toast.success(successMessage || 'Logged In successfully', {
           position: "bottom-right",
         })
         reset()
@@ -102,7 +101,10 @@ function CompanyLogin() {
               </div>
               <div className='flex flex-col gap-1'>
                 <div className="grid gap-2">
-                  <Label htmlFor="password">Password</Label>
+                  <div className='flex items-center justify-between'>
+                    <Label htmlFor="password">Password</Label>
+                    <Button variant={"ghost"} className='text-gray-500 text-xs tracking-wide text-right cursor-pointer' onClick={() => router.push('/forgot-password')}>Forgot Password?</Button>
+                  </div>
                   <div className='relative'>
                     <Input
                       id="password"
@@ -134,7 +136,7 @@ function CompanyLogin() {
                 {isPending ? <Spinner data-icon="inline-start" /> : null}
                 {isPending ? "Logging In" : "Log In"}
               </Button>
-              <p className='text-center text-sm text-muted-foreground'>Don't have an account? <Link href="/create-account" className='text-black'>Sign Up</Link></p>
+              <p className='text-center text-sm text-muted-foreground'>Don&apos;t have an account? <Link href="/create-account" className='text-black'>Sign Up</Link></p>
             </div>
           </form>)}
 

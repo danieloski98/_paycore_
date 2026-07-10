@@ -4,18 +4,21 @@ import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
+
   BanknoteIcon,
   BriefcaseBusinessIcon,
   CreditCardIcon,
-  FileBarChart2Icon,
   FileTextIcon,
   LayoutDashboardIcon,
-  ReceiptTextIcon,
   SettingsIcon,
   ShieldCheckIcon,
   Users2Icon,
   UsersIcon,
+
 } from "lucide-react"
+
+import type { LucideIcon } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -32,7 +35,7 @@ import {
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
 
-const primaryNavigation = [
+const SidebarLinks = [
   {
     label: "Overview",
     href: "/admin/overview",
@@ -40,17 +43,17 @@ const primaryNavigation = [
   },
   {
     label: "Employees",
-    href: "#",
+    href: "/admin/employees",
     icon: UsersIcon,
   },
   {
     label: "Payroll",
-    href: "#",
+    href: "/admin/payroll",
     icon: CreditCardIcon,
   },
   {
     label: "Payments",
-    href: "#",
+    href: "/admin/payments",
     icon: BriefcaseBusinessIcon,
   },
   {
@@ -65,7 +68,7 @@ const primaryNavigation = [
   // },
   {
     label: "Leave",
-    href: "#",
+    href: "/admin/leave",
     icon: FileTextIcon,
   },
   {
@@ -81,7 +84,7 @@ const primaryNavigation = [
   // },
   {
     label: "Settings",
-    href: "#",
+    href: "/admin/leave",
     icon: SettingsIcon,
   },
 ]
@@ -112,7 +115,7 @@ function Sidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {primaryNavigation.map((item) => {
+              {SidebarLinks.map((item) => {
                 const isActive =
                   item.href !== "#" &&
                   (pathname === item.href || pathname.startsWith(`${item.href}/`))

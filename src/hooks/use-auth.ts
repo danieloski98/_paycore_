@@ -1,6 +1,6 @@
 import { CompanyUserLoginPayload, CompanyUserSetupPayload, CreateCompanyUserAccountPayload, ForgotPasswordPayload, VerifyOTPPayload } from '@/lib/auth/payload'
 import { useMutation } from '@tanstack/react-query'
-import { company_user_login, company_user_setup, create_company_account, forgot_passord, verify_otp } from '@/services/auth/auth-service';
+import { company_user_login, company_user_setup, create_company_account, forgot_passord } from '@/services/auth/auth-service';
 import { GeneralResponse } from '@/lib/types';
 import { AxiosError, AxiosResponse } from 'axios';
 
@@ -71,19 +71,6 @@ export const useForgotPassword = () => {
     const { isPending, mutate, error } = useMutation<AxiosResponse<GeneralResponse<unknown>>, AxiosError<GeneralResponse>, ForgotPasswordPayload>({
         mutationFn: async (payload) => forgot_passord(payload),
         mutationKey: ['forgot_password'],
-    });
-    return {
-        isPending,
-        mutate,
-        error
-    }
-}
-
-export const useVerifyOTP = () => {
-    // you can now make use of this hook in your components to create a company user account
-    const { isPending, mutate, error } = useMutation<AxiosResponse<GeneralResponse<unknown>>, AxiosError<GeneralResponse>, VerifyOTPPayload>({
-        mutationFn: async (payload) => verify_otp(payload),
-        mutationKey: ['verify_otp'],
     });
     return {
         isPending,

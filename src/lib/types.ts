@@ -1,6 +1,6 @@
 export type GeneralResponse<T = unknown> = {
-    success: boolean;
-    message: string;
+    // success: boolean;
+    // message: string;
     data?: T;
     page?: number;
     total?: number;
