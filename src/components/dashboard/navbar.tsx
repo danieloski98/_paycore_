@@ -1,14 +1,11 @@
 "use client"
 
-import { BellIcon, LayoutGridIcon, SearchIcon, UserCircle2Icon } from "lucide-react"
+import { BellIcon, UserCircle2Icon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { usePathname } from "next/navigation"
-import { useAtomValue } from "jotai"
-import { authUserAtom } from "@/states/auth-user-state"
-import { SidebarItemProps, SidebarLinks } from "@/lib/constants"
+import { SidebarLinks } from "@/lib/constants"
 import { getActiveSidebarItem } from "@/lib/utils"
 
 

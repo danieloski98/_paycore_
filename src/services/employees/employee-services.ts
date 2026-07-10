@@ -10,3 +10,7 @@ export function add_employee(payload: AddEmployeePayload) {
 export function upload_employees(data: { employees: EmployeeType[] }) {
     return httpClient.post(URLS.employees.upload_employees, data)
 }
+
+export function get_employees() {
+    return httpClient.get(URLS.employees.get_employees)
+}

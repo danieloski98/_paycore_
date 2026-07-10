@@ -39,7 +39,7 @@ function EmployeeLogin() {
         },
     })
 
-    const serverError = error?.response?.data?.message ?? error?.message
+    const serverError =  error?.message
     console.log(serverError)
 
     const onSubmit: SubmitHandler<EmployeeLoginFormValues> = (values) => {
@@ -50,8 +50,7 @@ function EmployeeLogin() {
 
         setSuccessMessage('')
         companyUserLogin(payload, {
-            onSuccess: (response) => {
-                console.log(response.data.message)
+            onSuccess: () => {
                 setUserType('EMPLOYEE')
                 toast.success(successMessage || 'Log In successfully', {
                     position: "bottom-right",

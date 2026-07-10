@@ -5,10 +5,15 @@ export type EmployeeType = {
     email: string;
     phone: string;
     position: string;
+    picture: string;
     department: string;
     salary: number;
     startDate: string;
+    updatedAt?: string;
+    createdAt?: string;
   }
+  
+
   
 
   export interface Employee {

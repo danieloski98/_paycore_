@@ -36,6 +36,7 @@ import { useModal } from "@/hooks/useModal"
 import { DataTable } from "@/components/data-table/data-table"
 import { employeeColumns } from "@/components/data-table/columns/employee-columns"
 import { employees } from "@/components/data-table/sample-data/employee-data"
+import { useGetEmployees } from "@/hooks/use-employees"
 
 const employeeStats = [
   {
@@ -61,6 +62,8 @@ const employeeStats = [
 
 function EmployeesPage() {
   const { openModal } = useModal()
+  const { data, isLoading, error } = useGetEmployees();
+  console.log(data?.data.data?.data[0].firstName)
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">
       <section className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">

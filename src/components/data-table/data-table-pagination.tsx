@@ -17,24 +17,24 @@ export function DataTablePagination<TData>({
 
       <div className="text-sm text-muted-foreground">
         Showing{" "}
-        {table.getState().pagination.pageIndex *
-          table.getState().pagination.pageSize +
+        {table?.getState().pagination.pageIndex *
+          table?.getState().pagination.pageSize +
           1}
         -
         {Math.min(
-          (table.getState().pagination.pageIndex + 1) *
-            table.getState().pagination.pageSize,
-          table.getFilteredRowModel().rows.length
+          (table?.getState().pagination.pageIndex + 1) *
+            table?.getState().pagination.pageSize,
+          table?.getFilteredRowModel().rows.length
         )}{" "}
-        of {table.getFilteredRowModel().rows.length}
+        of {table?.getFilteredRowModel().rows.length}
       </div>
 
       <div className="flex gap-2">
         <Button
           variant="outline"
           size="sm"
-          disabled={!table.getCanPreviousPage()}
-          onClick={() => table.previousPage()}
+          disabled={!table?.getCanPreviousPage()}
+          onClick={() => table?.previousPage()}
         >
           Previous
         </Button>
@@ -42,8 +42,8 @@ export function DataTablePagination<TData>({
         <Button
           variant="outline"
           size="sm"
-          disabled={!table.getCanNextPage()}
-          onClick={() => table.nextPage()}
+          disabled={!table?.getCanNextPage()}
+          onClick={() => table?.nextPage()}
         >
           Next
         </Button>

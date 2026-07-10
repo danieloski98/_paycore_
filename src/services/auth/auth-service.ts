@@ -23,9 +23,3 @@ export function company_user_setup(userId: string, payload: CompanyUserSetupPayl
 export function forgot_passord(payload: ForgotPasswordPayload) {
     return httpClient.post(URLS.auth.forgot_password, payload);
 }
-
-export function verify_otp(payload: VerifyOTPPayload) {
-    return httpClient.post(URLS.auth.forgot_password, payload);
-}
-
-

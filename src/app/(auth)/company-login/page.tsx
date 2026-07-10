@@ -40,7 +40,7 @@ function CompanyLogin() {
     },
   })
 
-  const serverError = error?.response?.data?.message ?? error?.message
+  const serverError = error?.message
 
   const onSubmit: SubmitHandler<CompanyUserLoginFormValues> = (values) => {
     const payload: CompanyUserLoginFormValues = {
@@ -51,7 +51,9 @@ function CompanyLogin() {
     setSuccessMessage('')
     companyUserLogin(payload, {
       onSuccess: (response) => {
-        console.log(response.data.message)
+        console.log('[USER DATA]', response?.data?.data);
+        localStorage.setItem('token', (response?.data?.data as any)?.token as string);
+        localStorage.setItem('user_data', JSON.stringify(response?.data?.data));
         setUserType('USER')
         setAuthUser(response?.data?.data! as AuthUser);
         toast.success(successMessage || 'Logged In successfully', {

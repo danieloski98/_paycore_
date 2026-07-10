@@ -59,7 +59,7 @@ function CompanySetup() {
         setUserType("USER")
     }, [setUserType])
 
-    const serverError = error?.response?.data?.message ?? error?.message
+    const serverError = error?.message
 
     const onSubmit: SubmitHandler<CompanyUserSetupFormValues> = (values) => {
         const payload: CompanyUserSetupPayload = {
@@ -73,7 +73,6 @@ function CompanySetup() {
         setSuccessMessage('')
         company_user_setup({ userId: user?.id!, payload }, {
             onSuccess: (response) => {
-                console.log(response.data.message)
                 toast.success(successMessage || 'Setup Complated', {
                     position: "bottom-right",
                 })

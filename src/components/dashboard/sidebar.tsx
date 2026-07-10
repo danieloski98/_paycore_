@@ -5,7 +5,15 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
 
+  BanknoteIcon,
+  BriefcaseBusinessIcon,
+  CreditCardIcon,
+  FileTextIcon,
+  LayoutDashboardIcon,
+  SettingsIcon,
   ShieldCheckIcon,
+  Users2Icon,
+  UsersIcon,
 
 } from "lucide-react"
 
@@ -26,9 +34,60 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
-import { useSetAtom } from "jotai"
-import { SidebarLinks } from "@/lib/constants"
 
+const SidebarLinks = [
+  {
+    label: "Overview",
+    href: "/admin/overview",
+    icon: LayoutDashboardIcon,
+  },
+  {
+    label: "Employees",
+    href: "/admin/employees",
+    icon: UsersIcon,
+  },
+  {
+    label: "Payroll",
+    href: "/admin/payroll",
+    icon: CreditCardIcon,
+  },
+  {
+    label: "Payments",
+    href: "/admin/payments",
+    icon: BriefcaseBusinessIcon,
+  },
+  {
+    label: "Wallet",
+    href: "/admin/wallet",
+    icon: BanknoteIcon,
+  },
+  // {
+  //   label: "Tax",
+  //   href: "#",
+  //   icon: ReceiptTextIcon,
+  // },
+  {
+    label: "Leave",
+    href: "/admin/leave",
+    icon: FileTextIcon,
+  },
+  {
+    label: "Teams",
+    href: "/admin/teams",
+    icon: Users2Icon,
+  },
+  // {
+  //   label: "Reports",
+  //   href: "#",
+  //   icon: FileBarChart2Icon,
+  //   badge: "3",
+  // },
+  {
+    label: "Settings",
+    href: "/admin/leave",
+    icon: SettingsIcon,
+  },
+]
 
 function Sidebar() {
   const pathname = usePathname()

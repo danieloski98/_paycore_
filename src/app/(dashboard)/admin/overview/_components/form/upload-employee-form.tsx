@@ -9,16 +9,16 @@ import { useUploadEmployees } from '@/hooks/use-employees';
 import useForm from '@/hooks/use-form';
 import { SubmitHandler } from 'react-hook-form';
 import { UploadEmployeesFormValues, uploadEmployeesSchema } from '@/lib/schemas';
+import { useModal } from '@/hooks/useModal';
 
 const UploadEmployeesForm = () => {
   const { isPending, mutate, error } = useUploadEmployees()
-
+  const { closeModal } = useModal()
 
 
   const {
     handleSubmit,
     setValue,
-    watch,
     renderForm,
     register
   } = useForm({
@@ -39,6 +39,7 @@ const UploadEmployeesForm = () => {
     mutate(values, {
       onSuccess: () => {
         toast.success("Employees uploaded successfully");
+        closeModal()
       },
       onError: () => {
         toast.error(error?.message);

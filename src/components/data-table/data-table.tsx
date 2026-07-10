@@ -104,7 +104,7 @@ export function DataTable<TData>({
           )}
           {yearFilter && (
             <YearFilter
-              column={table.getColumn(yearFilter.column as string)}
+              column={table?.getColumn(yearFilter.column as string)}
               startYear={yearFilter.startYear}
             />
           )}
@@ -124,13 +124,13 @@ export function DataTable<TData>({
       <div className="border-y">
         <Table>
           <TableHeader className="bg-muted/50">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table?.getHeaderGroups()?.map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
+                {headerGroup?.headers.map((header) => (
                   <TableHead key={header.id} className="pl-6">
                     {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
+                      header?.column.columnDef.header,
+                      header?.getContext()
                     )}
                   </TableHead>
                 ))}
@@ -138,10 +138,10 @@ export function DataTable<TData>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.length ? (
-              table.getRowModel().rows.map((row) => (
+            {table?.getRowModel().rows.length ? (
+              table?.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
+                  {row?.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="pl-6">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
@@ -150,7 +150,7 @@ export function DataTable<TData>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell colSpan={columns?.length} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
