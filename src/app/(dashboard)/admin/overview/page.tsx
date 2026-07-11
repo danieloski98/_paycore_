@@ -1,4 +1,4 @@
-import React from "react"
+"use client"
 import Link from "next/link"
 import {
   AlertCircleIcon,
@@ -20,15 +20,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+import { PayrollTrendChart } from "@/components/charts/payroll-charts"
+import { useModal } from "@/hooks/use-modal"
+import { DataTable } from "@/components/data-table/data-table"
+import { employeeColumns } from "@/components/data-table/columns/employee-columns"
+import { Employee, employees } from "@/components/data-table/sample-data/employee-data"
+import { payrollData } from "@/components/data-table/sample-data/payroll-data"
+import { payrollColumns } from "@/components/data-table/columns/payroll-column"
 
 const stats = [
   {
@@ -95,7 +94,11 @@ const quickResources = [
   "Holiday Calendar 2024",
 ]
 
+
 function OverviewPage() {
+  const { openModal } = useModal();
+
+
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">
       <section className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
@@ -107,7 +110,7 @@ function OverviewPage() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline">
+          <Button variant="outline" onClick={() => openModal("new-employee")}>
             <UserRoundCheckIcon data-icon="inline-start" />
             Add Employee
           </Button>
@@ -145,143 +148,25 @@ function OverviewPage() {
         ))}
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <section className="grid gap-4">
         <div className="grid gap-4">
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardDescription>Monthly disbursement pattern</CardDescription>
-              <CardAction className="flex gap-2">
-                <Button variant="outline" size="xs">
-                  Monthly
-                </Button>
-                <Button variant="ghost" size="xs">
-                  Yearly
-                </Button>
-              </CardAction>
-              <CardTitle>Payroll Trends</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid min-h-72 grid-cols-7 items-end gap-3 rounded-xl bg-muted/40 p-4">
-                {payrollTrend.map((item) => (
-                  <div key={item.month} className="flex h-full flex-col justify-end gap-3">
-                    <div className="flex flex-1 items-end">
-                      <div
-                        className={cn(
-                          "w-full rounded-md",
-                          item.active ? "bg-primary" : "bg-primary/15"
-                        )}
-                        style={{ height: `${item.value}%` }}
-                      />
-                    </div>
-                    <span className="text-center text-xs font-medium text-muted-foreground">
-                      {item.month}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <PayrollTrendChart payrolls={payrollData} />
 
           <Card className="shadow-sm">
             <CardHeader>
-              <CardDescription>Last five payroll batches</CardDescription>
-              <CardAction>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="#">
-                    View All
-                    <ArrowUpRightIcon data-icon="inline-end" />
-                  </Link>
-                </Button>
-              </CardAction>
-              <CardTitle>Recent Payroll Activity</CardTitle>
+              <CardTitle className="text-xl font-semibold">Recent Payroll Activity</CardTitle>
             </CardHeader>
             <CardContent className="px-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="px-4">Batch ID</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Employees</TableHead>
-                    <TableHead className="pr-4">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {activities.map((activity) => (
-                    <TableRow key={activity.batchId}>
-                      <TableCell className="px-4 font-medium">{activity.batchId}</TableCell>
-                      <TableCell>{activity.date}</TableCell>
-                      <TableCell className="font-medium">{activity.amount}</TableCell>
-                      <TableCell>{activity.employees}</TableCell>
-                      <TableCell className="pr-4">
-                        <Badge variant="secondary">Success</Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <DataTable
+                data={payrollData}
+                columns={payrollColumns}
+                searchColumn="name"
+                searchPlaceholder="Search payroll..."
+              />
             </CardContent>
           </Card>
         </div>
 
-        <div className="grid gap-4">
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardDescription>Regulatory filing summary</CardDescription>
-              <CardTitle>Compliance Check</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              {complianceChecks.map((item) => (
-                <div key={item.name} className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      Latest filing status from PayStream
-                    </p>
-                  </div>
-                  <Badge variant={item.status === "Current" ? "secondary" : "outline"}>
-                    {item.status}
-                  </Badge>
-                </div>
-              ))}
-              <Button variant="outline" className="w-full">
-                Download Tax Forms
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="border-primary/10 bg-primary text-primary-foreground shadow-sm">
-            <CardHeader>
-              <CardDescription className="text-primary-foreground/70">
-                Let PayStream handle your tax filings directly with LIRS. No more manual
-                spreadsheets.
-              </CardDescription>
-              <CardTitle>Automate PAYE</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Button variant="secondary">Enable Automation</Button>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-sm">
-            <CardHeader>
-              <CardDescription>Helpful references for administrators</CardDescription>
-              <CardTitle>Quick Resources</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-3">
-              {quickResources.map((resource) => (
-                <Link
-                  key={resource}
-                  href="#"
-                  className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm font-medium transition-colors hover:bg-muted"
-                >
-                  <span>{resource}</span>
-                  <ArrowUpRightIcon size={16} className="text-muted-foreground" />
-                </Link>
-              ))}
-            </CardContent>
-          </Card>
-        </div>
       </section>
     </div>
   )

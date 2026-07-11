@@ -4,18 +4,21 @@ import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
+
   BanknoteIcon,
   BriefcaseBusinessIcon,
   CreditCardIcon,
-  FileBarChart2Icon,
   FileTextIcon,
   LayoutDashboardIcon,
-  ReceiptTextIcon,
   SettingsIcon,
   ShieldCheckIcon,
   Users2Icon,
   UsersIcon,
+
 } from "lucide-react"
+
+import type { LucideIcon } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -31,60 +34,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
+import { SidebarLinks } from "@/lib/constants"
 
-const primaryNavigation = [
-  {
-    label: "Overview",
-    href: "/admin/overview",
-    icon: LayoutDashboardIcon,
-  },
-  {
-    label: "Employees",
-    href: "#",
-    icon: UsersIcon,
-  },
-  {
-    label: "Payroll",
-    href: "#",
-    icon: CreditCardIcon,
-  },
-  {
-    label: "Payments",
-    href: "#",
-    icon: BriefcaseBusinessIcon,
-  },
-  {
-    label: "Wallet",
-    href: "/admin/wallet",
-    icon: BanknoteIcon,
-  },
-  // {
-  //   label: "Tax",
-  //   href: "#",
-  //   icon: ReceiptTextIcon,
-  // },
-  {
-    label: "Leave",
-    href: "#",
-    icon: FileTextIcon,
-  },
-  {
-    label: "Teams",
-    href: "/admin/teams",
-    icon: Users2Icon,
-  },
-  // {
-  //   label: "Reports",
-  //   href: "#",
-  //   icon: FileBarChart2Icon,
-  //   badge: "3",
-  // },
-  {
-    label: "Settings",
-    href: "#",
-    icon: SettingsIcon,
-  },
-]
 
 function Sidebar() {
   const pathname = usePathname()
@@ -112,7 +63,7 @@ function Sidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {primaryNavigation.map((item) => {
+              {SidebarLinks.map((item) => {
                 const isActive =
                   item.href !== "#" &&
                   (pathname === item.href || pathname.startsWith(`${item.href}/`))

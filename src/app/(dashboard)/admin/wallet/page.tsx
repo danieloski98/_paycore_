@@ -85,11 +85,6 @@ const transactions = [
   },
 ]
 
-const footerLinks = {
-  Product: ["Payroll", "Wallet", "Tax Compliance", "HR Tools"],
-  Company: ["About Us", "Careers", "Contact", "Support"],
-  Legal: ["Privacy Policy", "Terms of Service", "Security"],
-}
 
 function WalletPage() {
   const user = useAtomValue(authUserAtom);

@@ -40,7 +40,7 @@ function CreateCompanyAccount() {
     },
   })
 
-  const serverError = error?.response?.data?.message ?? error?.message
+  const serverError = error?.message
 
   const onSubmit: SubmitHandler<CreateCompanyUserAccountFormValues> = (values) => {
     const payload: CreateCompanyUserAccountPayload = {
