@@ -1,14 +1,9 @@
+"use client"
+
 
 import {
   BellIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DownloadIcon,
-  EyeIcon,
-  MoreVerticalIcon,
   Plus,
-  PlusIcon,
-  SearchIcon,
   TrendingUpIcon,
 } from "lucide-react"
 
@@ -22,18 +17,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { DataTable, TableFilter } from "@/components/data-table/data-table"
+import { useModal } from "@/hooks/use-modal"
+import { useGetPayrolls } from "@/hooks/use-payroll"
 import { payrollData } from "@/components/data-table/sample-data/payroll-data"
 import { payrollColumns } from "@/components/data-table/columns/payroll-column"
-import { DataTable } from "@/components/data-table/data-table"
+import { PayrollItem } from "@/models/payroll-model"
+import { useState } from "react"
 
 const summaryCards = [
   {
@@ -58,43 +48,61 @@ const summaryCards = [
   },
 ]
 
-const payrollRuns = [
-  {
-    month: "October 2024",
-    meta: "Initiated Oct 24, 2024",
-    payout: "₦8,450,200.00",
-    employees: "124",
-    status: "Paid",
-    action: "download",
-  },
-  {
-    month: "September 2024",
-    meta: "Initiated Sep 26, 2024",
-    payout: "₦7,920,000.00",
-    employees: "122",
-    status: "Processing",
-    action: "menu",
-  },
-  {
-    month: "August 2024 (Off-cycle)",
-    meta: "Last edited 2 hours ago",
-    payout: "₦1,200,000.00",
-    employees: "12",
-    status: "Draft",
-    action: "continue",
-  },
-  {
-    month: "August 2024",
-    meta: "Initiated Aug 25, 2024",
-    payout: "₦7,880,500.00",
-    employees: "121",
-    status: "Paid",
-    action: "download",
-  },
+const yearOptions = [
+  ...new Set(payrollData.map((x) => x.year)),
 ]
+  .sort((a, b) => Number(b) - Number(a))
+  .map((year) => ({
+    label: year,
+    value: year,
+  }));
 
+const payrollFilters: TableFilter<PayrollItem>[] = [
+  {
+    label: "Year",
+    column: "year",
+    options: yearOptions,
+  },
+  {
+    label: "Month",
+    column: "month",
+    options: [
+      { label: "January", value: "0" },
+      { label: "February", value: "1" },
+      { label: "March", value: "2" },
+      { label: "April", value: "3" },
+      { label: "May", value: "4" },
+      { label: "June", value: "5" },
+      { label: "July", value: "6" },
+      { label: "August", value: "7" },
+      { label: "September", value: "8" },
+      { label: "October", value: "9" },
+      { label: "November", value: "10" },
+      { label: "December", value: "11" },
+    ],
+  },
+  {
+    label: "Status",
+    column: "status",
+    options: [
+      { label: "PENDING", value: "PENDING" },
+      { label: "PROCESSING", value: "PROCESSING" },
+      { label: "SUCCESSFULL", value: "SUCCESSFULL" },
+    ],
+  },
+];
 
 function PayrollPage() {
+  const { openModal } = useModal()
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const { data, isLoading, pagination: pageInfo } = useGetPayrolls(
+    pagination.pageIndex + 1,
+    pagination.pageSize
+  )
+
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">
@@ -143,15 +151,15 @@ function PayrollPage() {
           <Card className="shadow-sm">
             <CardContent className="px-0">
               <DataTable
+                // data={data gotten from api}
                 data={payrollData}
                 columns={payrollColumns}
-                searchColumn="employee"
+                searchColumn="name"
+                isLoading={isLoading}
+                filters={payrollFilters}
                 searchPlaceholder="Search payroll..."
-                yearFilter={{
-                  column: "month",
-                  startYear: 2020
-                }}
-                action={<Button>
+                getRowLink={(payroll) => `/admin/payroll/${payroll.id}/payslip`}
+                action={<Button onClick={() => openModal("add-payroll")}>
                   <Plus /> Start New Payroll
                 </Button>}
               />

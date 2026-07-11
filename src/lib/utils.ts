@@ -13,3 +13,21 @@ export function getActiveSidebarItem(
 ): SidebarItemProps | undefined {
   return items.find((item) => pathname.startsWith(item.href));
 }
+
+export const formatMonthYear = (month: number, year: number): string => {
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  return `${monthNames[month]} ${year}`;
+};

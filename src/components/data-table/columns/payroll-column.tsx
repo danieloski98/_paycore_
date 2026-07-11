@@ -12,29 +12,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Payroll } from "../sample-data/payroll-data";
+import { useModal } from "@/hooks/use-modal";
+import { months } from "@/lib/constants";
+import { PayrollItem } from "@/models/payroll-model";
 
-export const payrollColumns: ColumnDef<Payroll>[] = [
+
+export const payrollColumns: ColumnDef<PayrollItem>[] = [
   {
-    accessorKey: "employee",
-    header: "Employee",
-  },
-  {
-    accessorKey: "amount",
-    header: "Salary",
+    accessorKey: "payroll",
+    header: "Payroll",
     cell: ({ row }) => {
-      const amount = row.original.amount;
-
       return (
-        <span className="font-medium">
-          ₦{amount.toLocaleString()}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "month",
-    header: "Payroll Month",
+        <div className="pl-4">{row.original.name}</div>
+      )
+    }
   },
   {
     accessorKey: "status",
@@ -44,11 +35,10 @@ export const payrollColumns: ColumnDef<Payroll>[] = [
 
       return (
         <span
-          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${
-            status === "Paid"
-              ? "bg-green-100 text-green-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
+          className={`inline-flex items-center ml-4 rounded-full px-3 py-1 text-xs font-medium ${status === "SUCCESSFULL"
+            ? "bg-green-100 text-green-700"
+            : "bg-yellow-100 text-yellow-700"
+            }`}
         >
           {status}
         </span>
@@ -56,36 +46,86 @@ export const payrollColumns: ColumnDef<Payroll>[] = [
     },
   },
   {
+    accessorKey: "year",
+    header: () => null,
+    cell: () => null,
+    enableHiding: true,
+  },
+  {
+    accessorKey: "month",
+    header: "Date Processed",
+    filterFn: (row, columnId, value) => {
+      return row.getValue<number>(columnId) === Number(value);
+    },
+    cell: ({ row }) => {
+      const data = row.original;
+
+      return (
+        <span className="font-medium ml-4">
+          {months[data.month].label} {data.year}
+        </span>
+      );
+    },
+  },
+  {
     id: "actions",
-    header: "",
-    cell: ({ row }) => (
-      <DropdownMenu >
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MoreHorizontal className="size-4" />
+    header: "Action",
+    cell: ({ row }) => {
+      const data = row.original;
+      const { openModal } = useModal()
+      return (
+        <div className="w-full flex items-center justify-between pr-6">
+          <Button>
+            {data.status === "PENDING" ? (
+              <>
+                <span
+                // onClick={() => handleStartProcessing(item.id)}
+                >
+                  Start Processing
+                </span>
+              </>
+            ) : data.status === "PROCESSING" ? (
+              <>
+                <span
+                >
+                  Cancel Processing
+                </span>
+              </>
+            ) : (
+              <span>
+                Payroll Done
+              </span>
+            )}
           </Button>
-        </DropdownMenuTrigger>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="ml-4">
+                <MoreHorizontal className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={() => console.log("View", row.original)}
-          >
-            View Payroll
-          </DropdownMenuItem>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => openModal("payroll-details", row.original)}
+              >
+                View
+              </DropdownMenuItem>
 
-          <DropdownMenuItem
-            onClick={() => console.log("Download Payslip", row.original)}
-          >
-            Download Payslip
-          </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => console.log("Download Payslip", row.original)}
+              >
+                Edit
+              </DropdownMenuItem>
 
-          <DropdownMenuItem
-            onClick={() => console.log("Mark Paid", row.original)}
-          >
-            Mark as Paid
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
+              <DropdownMenuItem
+                onClick={() => openModal("delete-payroll", row.original)}
+              >
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      )
+    },
   },
 ];

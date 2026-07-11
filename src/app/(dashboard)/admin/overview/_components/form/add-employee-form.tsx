@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { useAddEmployee } from "@/hooks/use-employees";
 import useForm from "@/hooks/use-form";
+import { useModal } from "@/hooks/use-modal";
 import {
   addEmployeeSchema,
   AddEmployeeFormValues,
@@ -17,6 +18,7 @@ import { toast } from "sonner";
 
 export default function AddEmployeeForm() {
   const { mutate, isPending, error } = useAddEmployee();
+  const { closeModal } = useModal()
 
   const {
     renderForm,
@@ -52,7 +54,7 @@ export default function AddEmployeeForm() {
         toast.success("Employee added successfully", {
           position: "bottom-right",
         });
-
+        closeModal()
         reset();
       },
 
