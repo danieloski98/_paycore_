@@ -1,14 +1,12 @@
 "use client"
 
-import { BellIcon, SearchIcon, UserCircle2Icon } from "lucide-react"
+import { BellIcon, UserCircle2Icon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { usePathname } from "next/navigation"
 import { SidebarLinks } from "@/lib/constants"
 import { getActiveSidebarItem } from "@/lib/utils"
-import { Input } from "../ui/input"
-
 
 function DashboardNavbar() {
   const pathname = usePathname();
@@ -22,17 +20,6 @@ function DashboardNavbar() {
           <SidebarTrigger className="md:hidden" />
           <div className="hidden min-w-0 md:block">
             <p className="text-2xl font-semibold">{activeItem?.label}</p>
-          </div>
-          <div className="relative hidden w-full max-w-xl min-w-sm md:block ml-6">
-            <SearchIcon
-              size={16}
-              className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input
-              aria-label="Search dashboard"
-              placeholder="Search employees or reports..."
-              className="pl-9"
-            />
           </div>
         </div>
 

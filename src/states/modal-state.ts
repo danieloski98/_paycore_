@@ -1,34 +1,21 @@
 import { atom } from "jotai";
 
 export type ModalType =
-  | "recent-payroll-detail"
-  | "payroll-details"
-  | "payslip-details"
-  | "add-payroll"
-  | "add-payslip"
-  | "edit-payroll"
-  | "delete-payroll"
-  | "change-password"
-  | "new-member"
   | "new-employee"
-  | "create-wallet"
-  | "fund-wallet"
-  | "success-wallet"
-  | "success-payroll"
-  | "notification"
-  | "manage-leave"
   | "edit-employee"
-  | "employee-change-passeord"
-  | "request-leave"
-  | "add-bank-details"
-  | "delete-bank"
-  | "add-earning"
   | "delete-employee"
+  | "notification"
+  | "add-payroll"
+  | "success-payroll"
+  | "delete-payroll"
+  | "payroll-details"
   | null;
 
-export type ModalState = {
+export interface ModalState<T = unknown> {
   type: ModalType;
-  data?: any; // generic data you can pass
-};
+  data?: T;
+}
 
-export const modalAtom = atom<ModalState>({ type: null });
+export const modalAtom = atom<ModalState>({
+  type: null,
+});

@@ -15,7 +15,7 @@ import {
   X,
 } from "lucide-react";
 
-import { useModal } from "@/hooks/useModal";
+import { useModal } from "@/hooks/use-modal";
 import AddEmployee from "./add-employee";
 import UploadCSV from "./upload-csv";
 

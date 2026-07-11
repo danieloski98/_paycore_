@@ -1,19 +1,15 @@
 "use client"
 
-import Link from "next/link"
-import React from "react"
+import { useState } from "react"
+import { PaginationState } from "@tanstack/react-table"
 import {
   BriefcaseBusinessIcon,
   DownloadIcon,
-  FilterIcon,
-  MailIcon,
   PlusIcon,
-  SearchIcon,
   ShieldCheckIcon,
   UsersIcon,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -23,19 +19,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { useModal } from "@/hooks/useModal"
+import { useModal } from "@/hooks/use-modal"
 import { DataTable } from "@/components/data-table/data-table"
 import { employeeColumns } from "@/components/data-table/columns/employee-columns"
-import { employees } from "@/components/data-table/sample-data/employee-data"
 import { useGetEmployees } from "@/hooks/use-employees"
 
 const employeeStats = [
@@ -59,11 +45,17 @@ const employeeStats = [
   },
 ]
 
-
 function EmployeesPage() {
   const { openModal } = useModal()
-  const { data, isLoading, error } = useGetEmployees();
-  console.log(data?.data.data?.data[0].firstName)
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  })
+
+  // API is 1-indexed, TanStack is 0-indexed — adjust the args below to
+  // whatever shape useGetEmployees actually expects.
+  const { employees, isLoading } = useGetEmployees();
+
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">
       <section className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
@@ -114,10 +106,15 @@ function EmployeesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 px-0">
-            <DataTable
-              data={employees}                     // ensure this array has status and department
-              columns={employeeColumns}            // no cast
-              searchColumn="name"
+            {/* <DataTable
+              columns={employeeColumns}
+              data={employees}
+              isLoading={isLoading}
+              manualPagination
+              pageCount={pageCount}
+              pagination={pagination}
+              onPaginationChange={setPagination}
+              searchColumn="firstName"
               searchPlaceholder="Search employees..."
               filters={[
                 {
@@ -126,17 +123,27 @@ function EmployeesPage() {
                   options: [
                     { label: "Engineering", value: "Engineering" },
                     { label: "Finance", value: "Finance" },
-                    { label: "Sales", value: "Sales" },      // match your actual data
+                    { label: "Sales", value: "Sales" },
                     { label: "Operations", value: "Operations" },
                   ],
                 },
+              ]}
+            /> */}
+            <DataTable
+              columns={employeeColumns}
+              data={employees}
+              isLoading={isLoading}
+              searchColumn={["firstName", "lastName", "email"]}
+              searchPlaceholder="Search employees..."
+              filters={[
                 {
-                  label: "Status",
-                  column: "status",
+                  label: "Department",
+                  column: "department",
                   options: [
-                    { label: "Active", value: "Active" },
-                    { label: "Inactive", value: "Inactive" },
-                    { label: "On Leave", value: "On Leave" },
+                    { label: "Engineering", value: "Engineering" },
+                    { label: "Finance", value: "Finance" },
+                    { label: "Sales", value: "Sales" },
+                    { label: "Operations", value: "Operations" },
                   ],
                 },
               ]}

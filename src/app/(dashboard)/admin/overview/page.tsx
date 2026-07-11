@@ -21,8 +21,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { PayrollTrendChart } from "@/components/charts"
-import { useModal } from "@/hooks/useModal"
+import { PayrollTrendChart } from "@/components/charts/payroll-charts"
+import { useModal } from "@/hooks/use-modal"
 import { DataTable } from "@/components/data-table/data-table"
 import { employeeColumns } from "@/components/data-table/columns/employee-columns"
 import { Employee, employees } from "@/components/data-table/sample-data/employee-data"
@@ -150,7 +150,7 @@ function OverviewPage() {
 
       <section className="grid gap-4">
         <div className="grid gap-4">
-          <PayrollTrendChart />
+          <PayrollTrendChart payrolls={payrollData} />
 
           <Card className="shadow-sm">
             <CardHeader>
@@ -160,7 +160,7 @@ function OverviewPage() {
               <DataTable
                 data={payrollData}
                 columns={payrollColumns}
-                searchColumn="employee"
+                searchColumn="name"
                 searchPlaceholder="Search payroll..."
               />
             </CardContent>

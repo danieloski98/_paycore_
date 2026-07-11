@@ -9,11 +9,13 @@ import { useUploadEmployees } from '@/hooks/use-employees';
 import useForm from '@/hooks/use-form';
 import { SubmitHandler } from 'react-hook-form';
 import { UploadEmployeesFormValues, uploadEmployeesSchema } from '@/lib/schemas';
-import { useModal } from '@/hooks/useModal';
+import { useModal } from '@/hooks/use-modal';
+import { QueryClient } from '@tanstack/react-query';
 
 const UploadEmployeesForm = () => {
   const { isPending, mutate, error } = useUploadEmployees()
   const { closeModal } = useModal()
+  const queryClient = new QueryClient()
 
 
   const {
@@ -39,6 +41,9 @@ const UploadEmployeesForm = () => {
     mutate(values, {
       onSuccess: () => {
         toast.success("Employees uploaded successfully");
+        queryClient.invalidateQueries({
+          queryKey: ['employees']
+        })
         closeModal()
       },
       onError: () => {
