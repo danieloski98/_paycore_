@@ -9,6 +9,7 @@ export type ModalType =
   | "success-payroll"
   | "delete-payroll"
   | "payroll-details"
+  | "edit-user"
   | null;
 
 export interface ModalState<T = unknown> {
