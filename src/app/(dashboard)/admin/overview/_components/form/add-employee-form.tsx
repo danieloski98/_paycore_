@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
+import { useGetDepartments } from "@/hooks/use-department";
 import { useAddEmployee } from "@/hooks/use-employees";
 import useForm from "@/hooks/use-form";
 import { useModal } from "@/hooks/use-modal";
@@ -12,6 +13,13 @@ import {
   addEmployeeSchema,
   AddEmployeeFormValues,
 } from "@/lib/schemas";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { format } from "date-fns";
 import { Controller, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
@@ -45,6 +53,10 @@ export default function AddEmployeeForm() {
 
   const serverError = error?.message
 
+  const {
+    departments,
+    isLoading,
+  } = useGetDepartments();
 
   const onSubmit: SubmitHandler<AddEmployeeFormValues> = (
     values
@@ -167,15 +179,43 @@ export default function AddEmployeeForm() {
           <div className="space-y-2">
             <Label>Department</Label>
 
-            <Input
-              placeholder="Engineering"
-              {...register("department")}
+            <Controller
+              control={control}
+              name="department"
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select department" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {isLoading ? (
+                      <SelectItem value="loading" disabled>
+                        Loading departments...
+                      </SelectItem>
+                    ) : departments?.length ? (
+                      departments?.map(({ id, name }) => (
+                        <SelectItem key={id} value={id}>
+                          {name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="empty" disabled>
+                        No departments found
+                      </SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              )}
             />
 
             {errors.department && (
               <p className="text-xs text-destructive">
                 {/* @ts-ignore */}
-                {errors.department?.message}
+                {errors?.department.message}
               </p>
             )}
           </div>

@@ -1,6 +1,6 @@
-import { CompanyUserLoginPayload, CompanyUserSetupPayload, CreateCompanyUserAccountPayload, ForgotPasswordPayload, VerifyOTPPayload } from '@/lib/auth/payload'
+import { ChangePasswordPayload, CompanyUserLoginPayload, CompanyUserSetupPayload, CreateCompanyUserAccountPayload, ForgotPasswordPayload, VerifyOTPPayload } from '@/lib/auth/payload'
 import { useMutation } from '@tanstack/react-query'
-import { company_user_login, company_user_setup, create_company_account, forgot_passord } from '@/services/auth/auth-service';
+import { change_passord, company_user_login, company_user_setup, create_company_account, forgot_passord } from '@/services/auth/auth-service';
 import { GeneralResponse } from '@/lib/types';
 import { AxiosError, AxiosResponse } from 'axios';
 
@@ -70,6 +70,19 @@ export const useForgotPassword = () => {
     // you can now make use of this hook in your components to create a company user account
     const { isPending, mutate, error } = useMutation<AxiosResponse<GeneralResponse<unknown>>, AxiosError<GeneralResponse>, ForgotPasswordPayload>({
         mutationFn: async (payload) => forgot_passord(payload),
+        mutationKey: ['forgot_password'],
+    });
+    return {
+        isPending,
+        mutate,
+        error
+    }
+}
+
+export const useChangePassword = () => {
+    // you can now make use of this hook in your components to create a company user account
+    const { isPending, mutate, error } = useMutation<AxiosResponse<GeneralResponse<unknown>>, AxiosError<GeneralResponse>, ChangePasswordPayload>({
+        mutationFn: async (payload) => change_passord(payload),
         mutationKey: ['forgot_password'],
     });
     return {

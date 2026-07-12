@@ -1,9 +1,7 @@
 import { AddEmployeePayload } from "@/lib/employee/payload";
-import { GeneralResponse } from "@/lib/types";
-import { EmployeeResponse, EmployeeType } from "@/models/employee-models";
+import { EmployeeType } from "@/models/employee-models";
 import { add_employee, delete_employee, edit_employee, get_employees, upload_employees } from "@/services/employees/employee-services";
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export interface PaginatedResponse<T> {
     data: T[];
