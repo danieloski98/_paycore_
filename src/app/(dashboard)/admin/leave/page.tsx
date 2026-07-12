@@ -28,6 +28,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { leaveColumns } from "@/components/data-table/columns/leave-columns"
+import { DataTable } from "@/components/data-table/data-table"
+import { leaveRequests } from "@/models/leave-model"
 
 const stats = [
   {
@@ -50,33 +53,6 @@ const stats = [
     note: "Scheduled employees",
     accent: "text-muted-foreground",
     icon: CalendarDaysIcon,
-  },
-]
-
-const leaveRequests = [
-  {
-    employee: "Amina Jibril",
-    role: "UX Designer",
-    leaveType: "Annual Leave",
-    duration: "Aug 12 - Aug 16",
-    year: "2024",
-    totalDays: "5",
-  },
-  {
-    employee: "Emeka Okafor",
-    role: "Backend Engineer",
-    leaveType: "Sick Leave",
-    duration: "Aug 05 - Aug 06",
-    year: "2024",
-    totalDays: "2",
-  },
-  {
-    employee: "Tunde Balogun",
-    role: "HR Specialist",
-    leaveType: "Maternity",
-    duration: "Sep 01 - Nov 30",
-    year: "2024",
-    totalDays: "90",
   },
 ]
 
@@ -138,106 +114,82 @@ function LeavePage() {
         </Card>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_220px]">
+      <section className="grid gap-4">
         <div className="grid gap-4">
-          <div className="relative w-full max-w-lg">
-            <SearchIcon
-              size={16}
-              className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
-            />
-            <Input placeholder="Search employees or leave records..." className="pl-9" />
-          </div>
-
           <Card className="shadow-sm">
-            <CardHeader className="border-b">
-              <div className="flex flex-wrap items-center gap-6">
-                <Button variant="ghost" className="rounded-none border-b-2 border-primary px-0 pb-3 font-semibold">
-                  Pending Requests
-                </Button>
-                <Button variant="ghost" className="rounded-none px-0 pb-3 text-muted-foreground">
-                  Leave History
-                </Button>
-                <Button variant="ghost" className="rounded-none px-0 pb-3 text-muted-foreground">
-                  Leave Policy
-                </Button>
-              </div>
-            </CardHeader>
-
             <CardContent className="px-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="px-4">Employee</TableHead>
-                    <TableHead>Leave Type</TableHead>
-                    <TableHead>Duration</TableHead>
-                    <TableHead>Total Days</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="pr-4 text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {leaveRequests.map((request) => (
-                    <TableRow key={request.employee}>
-                      <TableCell className="px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex size-10 items-center justify-center rounded-full bg-muted font-semibold text-muted-foreground">
-                            {request.employee
-                              .split(" ")
-                              .map((part) => part[0])
-                              .join("")}
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <span className="font-semibold">{request.employee}</span>
-                            <span className="text-sm text-muted-foreground">{request.role}</span>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{request.leaveType}</TableCell>
-                      <TableCell>
-                        <div className="flex flex-col gap-1">
-                          <span>{request.duration}</span>
-                          <span className="text-sm text-muted-foreground">{request.year}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-semibold">{request.totalDays}</TableCell>
-                      <TableCell>
-                        <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">
-                          Pending Approval
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="pr-4">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="icon-sm" aria-label={`Approve ${request.employee}`}>
-                            <CheckCircle2Icon className="text-green-600" />
-                          </Button>
-                          <Button variant="ghost" size="icon-sm" aria-label={`Reject ${request.employee}`}>
-                            <XCircleIcon className="text-red-500" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <DataTable
+                columns={leaveColumns}
+                data={leaveRequests}
+                // isLoading={isLoading}
+                searchColumn={[
+                  "Status", "type", "totalDays"
+                ]}
+                searchPlaceholder="Search employees..."
+                filters={[
+                  {
+                    label: "Leave Type",
+                    column: "type",
+                    options: [
+                      {
+                        label: "Vacation",
+                        value: "VACATION",
+                      },
+                      {
+                        label: "Sick",
+                        value: "SICK",
+                      },
+                      {
+                        label: "Personal",
+                        value: "PERSONAL",
+                      },
+                      {
+                        label: "Maternity",
+                        value: "MATERNITY",
+                      },
+                      {
+                        label: "Paternity",
+                        value: "PATERNITY",
+                      },
+                      {
+                        label: "Bereavement",
+                        value: "BEREAVEMENT",
+                      },
+                      {
+                        label: "Other",
+                        value: "OTHER",
+                      },
+                    ],
+                  },
+                  {
+                    label: "Status",
+                    column: "Status",
+                    options: [
+                      {
+                        label: "Pending",
+                        value: "PENDING",
+                      },
+                      {
+                        label: "Approved",
+                        value: "APPROVED",
+                      },
+                      {
+                        label: "Rejected",
+                        value: "REJECTED",
+                      },
+                      {
+                        label: "Cancelled",
+                        value: "CANCELLED",
+                      },
+                    ],
+                  },
+                ]}
+              />
             </CardContent>
-
-            <div className="flex flex-col gap-3 border-t px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-muted-foreground">
-                Showing 3 of 12 pending requests
-              </p>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="icon-sm" aria-label="Previous page">
-                  〈
-                </Button>
-                <Button variant="outline" size="icon-sm" aria-label="Next page">
-                  〉
-                </Button>
-              </div>
-            </div>
           </Card>
         </div>
 
-        <div className="grid gap-4">
+        {/* <div className="grid gap-4">
           <Card className="shadow-sm">
             <CardHeader>
               <CardTitle className="text-base">Who&apos;s Out</CardTitle>
@@ -291,7 +243,7 @@ function LeavePage() {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
       </section>
     </div>
   )

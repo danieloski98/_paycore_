@@ -4,7 +4,8 @@ import NewEmployee from "@/app/(dashboard)/admin/overview/_components/modal/new-
 import { AddPayrollModal } from "@/app/(dashboard)/admin/payroll/_components/modal/add-payroll/add-payroll-modal";
 import DeletePayrollModal from "@/app/(dashboard)/admin/payroll/_components/modal/delete-payroll-modal";
 import PayrollDetailsSheet from "@/app/(dashboard)/admin/payroll/_components/modal/view-payroll-sheet";
-import { EditUserModal } from "@/app/(dashboard)/admin/settings/department/_components/modal/edit-user-modal";
+import AddDepartmentModal from "@/app/(dashboard)/admin/settings/department/_components/modal/add-department-modal";
+import { EditUserModal } from "@/app/(dashboard)/admin/settings/general/_components/edit-user-modal";
 
 
 export function ModalProvider() {
@@ -17,6 +18,7 @@ export function ModalProvider() {
       <DeletePayrollModal />
       <PayrollDetailsSheet />
       <EditUserModal />
+      <AddDepartmentModal />
       {/* <Success */}
     </>
   );

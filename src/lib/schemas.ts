@@ -167,8 +167,8 @@ export const userSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required"),
   lastName: z.string().trim().min(1, "Last name is required"),
   email: z.string().trim().email("Enter a valid email"),
-  role: userRoleEnum,
-  profilePicture: z.string().nullable(),
+  role: z.string(),
+  picture: z.string().nullable(),
   isActive: z.boolean(),
 });
 

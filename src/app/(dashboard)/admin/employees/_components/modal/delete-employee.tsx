@@ -7,6 +7,7 @@ import { useModal } from "@/hooks/use-modal";
 import { EmployeeType } from "@/models/employee-models";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export function DeleteEmployeeModal() {
@@ -14,17 +15,26 @@ export function DeleteEmployeeModal() {
   const { mutate, isPending } = useDeleteEmployee();
   const queryClient = useQueryClient();
 
+
   const handleDelete = () => {
-    mutate(data?.id, {
-      onSuccess: () => {
+    if (!data?.id) return;
+
+    mutate(data.id, {
+      onSuccess: async () => {
         toast.success("Employee deleted");
-        queryClient.invalidateQueries({
-          queryKey: ["employees"]
-        })
+
+        await queryClient.invalidateQueries({
+          queryKey: ["employees"],
+        });
+
         closeModal();
       },
-      onError: (err: any) => {
-        toast.error(err?.response?.data?.message);
+
+      onError: (error: any) => {
+        toast.error(
+          error?.response?.data?.message ??
+          "Unable to delete employee"
+        );
       },
     });
   };

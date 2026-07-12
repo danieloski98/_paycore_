@@ -16,6 +16,7 @@ export const URLS = {
         add_employee: '/employees',
         upload_employees: '/employees/bulk',
         get_employees: '/employees/company/all',
+        get_employee: (id: string) => `/employees/company/${id}`,
         edit_employee: (id: string) => `/employees/${id}`,
         delete_employee: (id: string) => `/employees/${id}`
     },
@@ -33,7 +34,7 @@ export const URLS = {
     company: {
         create_company_account: (userId: string) => `/company/${userId}`,
         get_company: (id: string) => `/company/${id}`,
-        update_company: (id: string) => `company/${id}`,
+        update_company: (id: string) => `/company/${id}`,
     },
     upload: {
         upload_file: ""

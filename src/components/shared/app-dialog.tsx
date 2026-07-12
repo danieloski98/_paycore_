@@ -40,7 +40,7 @@ export function AppDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={sizes[size]}>
         {(title || description) && (
-          <DialogHeader className="mb-6">
+          <DialogHeader className="mb-4">
             {title && <DialogTitle className="text-xl font-semibold">{title}</DialogTitle>}
             {description && (
               <DialogDescription>{description}</DialogDescription>

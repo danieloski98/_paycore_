@@ -61,10 +61,11 @@ const Department = () => {
           onAdd={handleAdd}
         />
       </div>
-
-      <DepartmentForm
-        department={selected}
-      />
+      {selected &&
+        <DepartmentForm
+          department={selected}
+        />
+      }
     </div>
   );
 };
