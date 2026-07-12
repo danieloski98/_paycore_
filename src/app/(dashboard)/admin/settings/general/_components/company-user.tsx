@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Download, Trash2, Upload } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,7 +10,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { useAtom } from 'jotai'
 import { AuthUser, authUserAtom } from '@/states/auth-user-state'
 import { useModal } from '@/hooks/use-modal'
-import { useUpdateUser } from '@/hooks/use-user'
+import { useUpdateUser, useUpdateUserPicture } from '@/hooks/use-user'
 import { useUploadImage } from '@/hooks/use-upload' // or useUploadCompanyLogo, whichever generic upload hook you kept
 import { toast } from 'sonner'
 
@@ -22,54 +22,44 @@ const ROLE_LABELS: Record<AuthUser["role"], string> = {
 }
 
 const CompanyUser = () => {
-    const [user, setUser] = useAtom(authUserAtom)
+    const [user, setAuthUser] = useAtom(authUserAtom);
     const { openModal } = useModal()
 
-    const fileInputRef = useRef<HTMLInputElement>(null)
-    const { mutate: uploadImage, isPending: isUploading } = useUploadImage()
-    const { mutate: updateUser, isPending: isSavingPhoto } = useUpdateUser(user?.id ?? "")
-    const [photoPreview, setPhotoPreview] = useState<string | undefined>()
+    // const { mutate: updateUser, isPending: isSavingPhoto } = useUpdateUser(user?.id ?? "")
 
-    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
-        e.target.value = ""
-        if (!file) return
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const { mutate: updateUserPicture, isPending: isSavingPicture } = useUpdateUserPicture();
+    const [picturePreview, setPicturePreview] = useState<string | undefined>();
 
-        const localPreview = URL.createObjectURL(file)
-        setPhotoPreview(localPreview)
+    useEffect(() => {
+        setPicturePreview(user?.picture ?? undefined);
+    }, [user]);
 
-        uploadImage(file, {
-            onSuccess: (res) => {
-                if (!res.data) {
-                    toast.error("Upload succeeded but no URL was returned")
-                    setPhotoPreview(user?.picture ?? undefined)
-                    return
-                }
+    const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        e.target.value = "";
+        if (!file || !user?.id) return;
 
-                // updateUser(
-                //     { picture: url },
-                //     {
-                //         onSuccess() {
-                //             setPhotoPreview(url)
-                //             // keep the atom in sync so the rest of the app reflects the new photo immediately
-                //             if (user) setUser({ ...user, picture: url })
-                //             toast.success("Photo updated")
-                //         },
-                //         onError(error: any) {
-                //             toast.error(error?.response?.data?.message ?? "Unable to save photo")
-                //             setPhotoPreview(user?.picture ?? undefined)
-                //         },
-                //     }
-                // )
-            },
-            onError: () => {
-                setPhotoPreview(user?.picture ?? undefined)
-                toast.error("Unable to upload photo")
-            },
-        })
-    }
+        const localPreview = URL.createObjectURL(file);
+        setPicturePreview(localPreview);
 
-    const isBusyWithPhoto = isUploading || isSavingPhoto
+        updateUserPicture(
+            { userId: user.id, file },
+            {
+                onSuccess(picture) {
+                    setPicturePreview(picture);
+                    if (user) {
+                        setAuthUser({ ...user, picture }); // 👈 include the new value, not just a copy of the old object
+                    }
+                    toast.success("Photo updated");
+                },
+                onError(error: any) {
+                    toast.error(error?.response?.data?.message ?? error?.message ?? "Unable to update photo");
+                    setPicturePreview(user?.picture ?? undefined);
+                },
+            }
+        );
+    };
 
     return (
         <div className="space-y-6">
@@ -84,7 +74,7 @@ const CompanyUser = () => {
                         <div className="flex items-center gap-5">
 
                             <Avatar className="h-24 w-24">
-                                <AvatarImage src={photoPreview ?? user?.picture ?? undefined} />
+                                <AvatarImage src={picturePreview ?? user?.picture ?? undefined} />
                                 <AvatarFallback>
                                     {user?.firstName?.[0]}
                                     {user?.lastName?.[0]}
@@ -114,20 +104,20 @@ const CompanyUser = () => {
                             type="file"
                             accept="image/*"
                             className="hidden"
-                            onChange={handlePhotoChange}
+                            onChange={handlePictureChange}
                         />
 
                         <Button
                             variant="outline"
-                            disabled={isBusyWithPhoto}
+                            disabled={isSavingPicture}
                             onClick={() => fileInputRef.current?.click()}
                         >
-                            {isBusyWithPhoto ? (
+                            {isSavingPicture ? (
                                 <Spinner data-icon="inline-start" />
                             ) : (
                                 <Upload className="mr-2 h-4 w-4" />
                             )}
-                            {isUploading ? "Uploading..." : isSavingPhoto ? "Saving..." : "Upload Photo"}
+                            {isSavingPicture ? "Uploading..." : isSavingPicture ? "Saving..." : "Upload Photo"}
                         </Button>
 
                     </div>
@@ -145,7 +135,7 @@ const CompanyUser = () => {
                         variant="outline"
                         className="w-full justify-start text-destructive hover:text-destructive"
                         size="sm"
-                        // onClick={() => openModal("deactivate-account", user)}
+                    // onClick={() => openModal("deactivate-account", user)}
                     >
                         <Trash2 className="h-4 w-4 mr-2" />
                         Deactivate Account

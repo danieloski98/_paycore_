@@ -177,7 +177,8 @@ export function DataTable<TData>({
                   return (
                     <TableRow
                       key={row.id}
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation()
                         if (href) router.push(href);
                       }}
                     >

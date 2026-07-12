@@ -106,7 +106,10 @@ export const payrollColumns: ColumnDef<PayrollItem>[] = [
 
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => openModal("payroll-details", row.original)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openModal("payroll-details", row.original)
+                }}
               >
                 View
               </DropdownMenuItem>

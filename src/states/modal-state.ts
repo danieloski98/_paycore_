@@ -10,6 +10,7 @@ export type ModalType =
   | "delete-payroll"
   | "payroll-details"
   | "edit-user"
+  | "add-department"
   | null;
 
 export interface ModalState<T = unknown> {

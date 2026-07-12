@@ -27,3 +27,7 @@ export function upload_employees(data: { employees: EmployeeType[] }) {
 export function get_employees(page: number = 1, limit: number = 10) {
     return httpClient.get(URLS.employees.get_employees, { params: { page, limit } })
 }
+
+export function get_employee_by_id(id: string) {
+    return httpClient.get(URLS.employees.get_employee(id))
+}
