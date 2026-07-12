@@ -1,4 +1,4 @@
-import { CompanyUserLoginPayload, CompanyUserSetupPayload, CreateCompanyUserAccountPayload, EmployeeLoginPayload, ForgotPasswordPayload, VerifyOTPPayload } from "@/lib/auth/payload";
+import { ChangePasswordPayload, CompanyUserLoginPayload, CompanyUserSetupPayload, CreateCompanyUserAccountPayload, EmployeeLoginPayload, ForgotPasswordPayload, VerifyOTPPayload } from "@/lib/auth/payload";
 import httpClient from "../api-service";
 import { URLS } from "@/lib/urls";
 
@@ -19,7 +19,10 @@ export function company_user_setup(userId: string, payload: CompanyUserSetupPayl
     return httpClient.post(URLS.auth.company_user_setup(userId), payload);
 }
 
-
 export function forgot_passord(payload: ForgotPasswordPayload) {
     return httpClient.post(URLS.auth.forgot_password, payload);
+}
+
+export function change_passord(payload: ChangePasswordPayload) {
+    return httpClient.post(URLS.auth.change_password, payload);
 }

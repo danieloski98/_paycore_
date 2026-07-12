@@ -6,7 +6,11 @@ export const URLS = {
         company_user_setup: (userId: string) => `/company/${userId}`,
         employee_login: '/employees/login',
         forgot_password: '/user-auth/password-reset',
-        verify_otp: ""
+        verify_otp: "",
+        change_password: "/user-auth/change-password",
+    },
+    users: {
+        update_user: (id: string) => `/CompanyUsers/${id}`
     },
     employees: {
         add_employee: '/employees',
@@ -20,8 +24,19 @@ export const URLS = {
         get_payroll: "/payroll/company",
         delete_payroll: (id: string) => `/payroll/${id}`
     },
+    department: {
+        add_department: "/departments",
+        get_department: "/departments",
+        update_department: (id: string) => `/departments/${id}`,
+        delete_department: (id: string) => `/departments/${id}`,
+    },
     company: {
-        create_company_account: (userId: string) => `/company/${userId}`
+        create_company_account: (userId: string) => `/company/${userId}`,
+        get_company: (id: string) => `/company/${id}`,
+        update_company: (id: string) => `company/${id}`,
+    },
+    upload: {
+        upload_file: ""
     },
     wallet: {
         get_wallet_balance: (company_id: string) => `/wallet/${company_id}`,

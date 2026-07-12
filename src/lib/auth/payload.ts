@@ -22,8 +22,16 @@ export interface ForgotPasswordPayload {
     email: string;
     type: string
 }
+
+
 export interface VerifyOTPPayload {
     otp: number;
+}
+
+export interface ChangePasswordPayload {
+  userId: string;
+  newPassword: string;
+  type: string;
 }
 
 export interface CompanyUserSetupPayload {
