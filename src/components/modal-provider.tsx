@@ -6,6 +6,7 @@ import DeletePayrollModal from "@/app/(dashboard)/admin/payroll/_components/moda
 import PayrollDetailsSheet from "@/app/(dashboard)/admin/payroll/_components/modal/view-payroll-sheet";
 import AddDepartmentModal from "@/app/(dashboard)/admin/settings/department/_components/modal/add-department-modal";
 import { EditUserModal } from "@/app/(dashboard)/admin/settings/general/_components/edit-user-modal";
+import FundWalletModal from "./wallet/modals/fund-wallet-modal";
 
 
 export function ModalProvider() {
@@ -19,6 +20,7 @@ export function ModalProvider() {
       <PayrollDetailsSheet />
       <EditUserModal />
       <AddDepartmentModal />
+      <FundWalletModal />
       {/* <Success */}
     </>
   );

@@ -41,57 +41,97 @@ import { useAtomValue } from "jotai"
 import { authUserAtom } from "@/states/auth-user-state"
 import { useGetBalance, useGetPaymentHistory } from "@/hooks/use-wallet"
 import { Spinner } from "@/components/ui/spinner"
+import { useModal } from "@/hooks/use-modal";
+import { EmptyView } from "@/components/custom/empty-view";
+import { toast } from "sonner";
 
-const transactions = [
-  {
-    status: "Success",
-    type: "credit",
-    title: "Wallet Top-up",
-    detail: "Bank transfer via Providus",
-    reference: "TXN-8821045521",
-    date: "Nov 24, 2024",
-    time: "10:45 AM",
-    amount: "+₦5,000,000.00",
-  },
-  {
-    status: "Success",
-    type: "debit",
-    title: "November Salary Payout",
-    detail: "142 employees processed",
-    reference: "PYRL-2024-NOV",
-    date: "Nov 22, 2024",
-    time: "04:12 PM",
-    amount: "-₦3,240,500.00",
-  },
-  {
-    status: "Success",
-    type: "debit",
-    title: "LIRS Tax Remittance",
-    detail: "Q4 statutory compliance",
-    reference: "TAX-LAG-44102",
-    date: "Nov 15, 2024",
-    time: "09:00 AM",
-    amount: "-₦1,120,000.00",
-  },
-  {
-    status: "Processing",
-    type: "transfer",
-    title: "Withdrawal to GTBank",
-    detail: "Transfer to operating account",
-    reference: "WD-99210452",
-    date: "Nov 28, 2024",
-    time: "01:22 PM",
-    amount: "-₦500,000.00",
-  },
-]
+
 
 
 function WalletPage() {
   const user = useAtomValue(authUserAtom);
+  const { openModal } = useModal();
   const [page, setPage] = useState(1);
   const { data, isLoading, isError } = useGetBalance(user?.companyId as string);
   const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError } = useGetPaymentHistory(user?.companyId as string, page, 10)
-  console.log('[WALLET BALANCE]', data?.data);
+  console.log('[TRANSACTION DATA]', transactionsData?.data?.data);
+
+  const transactionMeta = transactionsData?.data?.data;
+  const limit = transactionMeta?.limit || 10;
+  const total = transactionMeta?.total || 0;
+  const totalPages = transactionMeta?.totalPages || 0;
+  const currentPage = transactionMeta?.page || page;
+
+  const startIndex = total > 0 ? (currentPage - 1) * limit + 1 : 0;
+  const endIndex = Math.min(currentPage * limit, total);
+
+  const handleExport = () => {
+    const dataToExport = transactionsData?.data?.data?.data || [];
+    if (dataToExport.length === 0) {
+      toast.error("No transaction data available to export.");
+      return;
+    }
+
+    try {
+      // Format headers and rows
+      const headers = ["Reference", "Amount (₦)", "Status", "Date", "Time"];
+      const rows = dataToExport.map((txn: any) => {
+        const dateObj = txn.createdAt ? new Date(txn.createdAt) : null;
+        const dateStr = dateObj
+          ? dateObj.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          })
+          : "";
+        const timeStr = dateObj
+          ? dateObj.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+          : "";
+
+        const amountVal = Number(txn.amount || 0);
+
+        return [
+          txn.reference || "",
+          amountVal,
+          txn.status || "",
+          dateStr,
+          timeStr,
+        ];
+      });
+
+      // Generate CSV string
+      const csvContent = [
+        headers.join(","),
+        ...rows.map((row: any[]) =>
+          row.map(val => {
+            const strVal = String(val);
+            if (strVal.includes(",") || strVal.includes('"') || strVal.includes('\n')) {
+              return `"${strVal.replace(/"/g, '""')}"`;
+            }
+            return strVal;
+          }).join(",")
+        )
+      ].join("\r\n");
+
+      // Create a Blob and trigger a download
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `transaction_ledger_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success("Transaction ledger exported successfully.");
+    } catch (error) {
+      console.error("Export failed:", error);
+      toast.error("Failed to export transaction ledger.");
+    }
+  };
 
   return (
     <div className="flex flex-1 flex-col">
@@ -105,7 +145,7 @@ function WalletPage() {
           </div>
         </section>
 
-        <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
+        <section className="w-full">
           <Card className="overflow-hidden border-0 bg-primary text-primary-foreground shadow-sm h-60">
             <CardHeader className="relative">
               <div className="absolute top-0 right-0 size-28 rounded-bl-[2rem] bg-primary-foreground/5" />
@@ -114,8 +154,8 @@ function WalletPage() {
               </CardDescription>
               {isLoading && <Spinner />}
               {!isLoading && !isError && data && (
-                <CardTitle className="text-4xl font-semibold md:text-5xl">
-                  ₦ {data?.data?.data?.balance}
+                <CardTitle className="text-4xl font-semibold md:text-5xl my-5">
+                  {new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(Number(data?.data?.data?.balance || 0))}
                 </CardTitle>
               )}
               {!isLoading && isError && (
@@ -125,7 +165,7 @@ function WalletPage() {
               )}
             </CardHeader>
             <CardContent className="flex flex-wrap gap-3">
-              <Button variant="secondary">
+              <Button variant="secondary" onClick={() => openModal('fund-wallet')}>
                 <PlusCircleIcon data-icon="inline-start" />
                 Fund Wallet
               </Button>
@@ -139,7 +179,7 @@ function WalletPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-sm">
+          {/* <Card className="shadow-sm">
             <CardHeader>
               <CardAction>
                 <InfoIcon className="text-muted-foreground" />
@@ -176,18 +216,18 @@ function WalletPage() {
                 <p className="mt-1 font-semibold">PayStream - Global Logistics Ltd</p>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </section>
 
         <section>
           <Card className="shadow-sm">
             <CardHeader>
               <CardAction className="flex gap-2">
-                <Button variant="outline" size="sm">
+                {/* <Button variant="outline" size="sm">
                   <FunnelIcon data-icon="inline-start" />
                   Filter
-                </Button>
-                <Button variant="outline" size="sm">
+                </Button> */}
+                <Button variant="outline" size="sm" onClick={handleExport}>
                   <DownloadIcon data-icon="inline-start" />
                   Export
                 </Button>
@@ -199,25 +239,66 @@ function WalletPage() {
             </CardHeader>
 
             <CardContent className="px-0">
-              <DataTable columns={columns} data={transactions} />
+              {transactionsLoading && <Spinner />}
+              {!transactionsLoading && !transactionsError && transactionsData?.data?.data?.data?.length < 1 && (
+                <EmptyView
+                  title='No Transactions Found'
+                  description='Once you start managing payroll, you’ll see transaction history here.'
+                  icon={<WalletIcon />}
+                />
+              )}
+              {!transactionsLoading && !transactionsError && transactionsData?.data?.data?.data?.length > 0 && (
+                <DataTable columns={columns} data={transactionsData?.data?.data?.data} />
+              )}
             </CardContent>
 
             <div className="flex flex-col gap-3 border-t px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-muted-foreground">
-                Showing 1-4 of 156 transactions
+                {total > 0 ? `Showing ${startIndex}-${endIndex} of ${total} transactions` : 'No transactions to show'}
               </p>
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="icon-sm" aria-label="Previous page">
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  aria-label="Previous page"
+                  disabled={currentPage <= 1 || transactionsLoading}
+                  onClick={() => setPage(currentPage - 1)}
+                >
                   <ChevronLeftIcon />
                 </Button>
-                <Button size="icon-sm">1</Button>
-                <Button variant="ghost" size="icon-sm">
-                  2
-                </Button>
-                <Button variant="ghost" size="icon-sm">
-                  3
-                </Button>
-                <Button variant="outline" size="icon-sm" aria-label="Next page">
+
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(p => {
+                    if (totalPages <= 5) return true;
+                    return Math.abs(p - currentPage) <= 1 || p === 1 || p === totalPages;
+                  })
+                  .map((p, idx, arr) => {
+                    const showEllipsis = idx > 0 && p - arr[idx - 1] > 1;
+                    return (
+                      <React.Fragment key={p}>
+                        {showEllipsis && (
+                          <span className="text-muted-foreground px-1 text-sm">...</span>
+                        )}
+                        <Button
+                          size="icon-sm"
+                          variant={p === currentPage ? "default" : "ghost"}
+                          onClick={() => setPage(p)}
+                          disabled={transactionsLoading}
+                        >
+                          {p}
+                        </Button>
+                      </React.Fragment>
+                    );
+                  })
+                }
+
+                <Button
+                  variant="outline"
+                  size="icon-sm"
+                  aria-label="Next page"
+                  disabled={currentPage >= totalPages || transactionsLoading}
+                  onClick={() => setPage(currentPage + 1)}
+                >
                   <ChevronRightIcon />
                 </Button>
               </div>
