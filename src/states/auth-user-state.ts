@@ -16,7 +16,13 @@ export interface AuthUser {
     deletedAt: string | null;
 }
 
-const authUserStorage = createJSONStorage<AuthUser | null>(() => localStorage);
+const authUserStorage = createJSONStorage<AuthUser | null>(
+    () => (typeof window !== 'undefined' ? window.localStorage : {
+        getItem: () => null,
+        setItem: () => {},
+        removeItem: () => {},
+    })
+);
 
 export const authUserAtom = atomWithStorage<AuthUser | null>(
     "paycore:auth-user",

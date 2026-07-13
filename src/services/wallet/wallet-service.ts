@@ -1,7 +1,7 @@
 import { URLS } from "@/lib/urls";
 import httpClient from "../api-service";
 
-export function get_wallet_balanxe(companyId: string) {
+export function get_wallet_balance(companyId: string) {
     return httpClient.get(URLS.wallet.get_wallet_balance(companyId))
 }
 

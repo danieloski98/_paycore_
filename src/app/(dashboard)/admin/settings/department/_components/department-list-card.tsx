@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 import { Department } from "@/models/departments";
+import { useModal } from "@/hooks/use-modal";
 
 interface Props {
   departments: Department[];
@@ -42,6 +43,7 @@ export function DepartmentListCard({
   onDelete,
   onAdd,
 }: Props) {
+  const { openModal } = useModal()
   return (
     <Card className="h-fit">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -53,7 +55,7 @@ export function DepartmentListCard({
           </CardDescription>
         </div>
 
-        <Button onClick={onAdd}>
+        <Button onClick={() => openModal("add-department")}>
           <Plus className="mr-2 h-4 w-4" />
           New Department
         </Button>
@@ -126,20 +128,18 @@ export function DepartmentListCard({
                   <div
                     key={department.id}
                     onClick={() => onSelect(department)}
-                    className={`group cursor-pointer rounded-xl border p-4 transition-all duration-200 ${
-                      active
+                    className={`group cursor-pointer rounded-xl border p-4 transition-all duration-200 ${active
                         ? "border-primary bg-primary/5 shadow-sm"
                         : "hover:border-primary/30 hover:bg-muted/40"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div
-                          className={`flex h-11 w-11 items-center justify-center rounded-lg ${
-                            active
+                          className={`flex h-11 w-11 items-center justify-center rounded-lg ${active
                               ? "bg-primary text-primary-foreground"
                               : "bg-muted"
-                          }`}
+                            }`}
                         >
                           <Building2 className="h-5 w-5" />
                         </div>

@@ -136,7 +136,7 @@ const CompanyProfile = () => {
             <CardContent className="space-y-6">
                 <div className='flex items-center gap-6'>
                     <Avatar className="h-24 w-24">
-                        <AvatarImage src={logoPreview ?? user?.picture!} />
+                        <AvatarImage src={logoPreview ?? company?.logo!} />
                         <AvatarFallback>JA</AvatarFallback>
                     </Avatar>
 

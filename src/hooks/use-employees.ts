@@ -1,7 +1,9 @@
 import { AddEmployeePayload } from "@/lib/employee/payload";
+import { GeneralResponse } from "@/lib/types";
 import { EmployeeType } from "@/models/employee-models";
-import { add_employee, delete_employee, edit_employee, get_employees, upload_employees } from "@/services/employees/employee-services";
+import { add_employee, delete_employee, edit_employee, get_employee_by_id, get_employees, upload_employees } from "@/services/employees/employee-services";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
 
 export interface PaginatedResponse<T> {
     data: T[];
@@ -128,4 +130,21 @@ export const useGetEmployees = () => {
     });
 
     return { ...query, employees: query.data ?? [] };
+};
+
+
+export const useGetEmployeeById = (id: string) => {
+    const query = useQuery<
+        AxiosResponse<GeneralResponse<EmployeeType>>
+    >({
+        queryKey: ["company", id],
+        queryFn: () => get_employee_by_id(id),
+        enabled: !!id,
+        staleTime: 5 * 60 * 1000,
+    });
+
+    return {
+        ...query,
+        employee: query.data?.data.data,
+    };
 };
