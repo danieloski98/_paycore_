@@ -3,8 +3,8 @@
 import { Tabs } from "@/components/ui/tabs";
 import { usePathname, useRouter } from "next/navigation";
 
-import SettingHeader from "./_components/settings-header";
-import SettingsNav from "./_components/settings-nav";
+import SettingHeader from "../../../../components/admin/settings/settings-header";
+import SettingsNav from "../../../../components/admin/settings/settings-nav";
 
 export default function SettingsLayout({
     children,

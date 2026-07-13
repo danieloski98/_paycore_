@@ -1,16 +1,16 @@
 "use client";
 
-import { DeleteEmployeeModal } from "@/app/(dashboard)/admin/employees/_components/modal/delete-employee";
-import { EditEmployeeModal } from "@/app/(dashboard)/admin/employees/_components/modal/edit-employee";
-import NewEmployee from "@/app/(dashboard)/admin/overview/_components/modal/new-employee";
-import { AddPayrollModal } from "@/app/(dashboard)/admin/payroll/_components/modal/add-payroll/add-payroll-modal";
-import DeletePayrollModal from "@/app/(dashboard)/admin/payroll/_components/modal/delete-payroll-modal";
-import PayrollDetailsSheet from "@/app/(dashboard)/admin/payroll/_components/modal/view-payroll-sheet";
-import AddDepartmentModal from "@/app/(dashboard)/admin/settings/department/_components/modal/add-department-modal";
-import { EditUserModal } from "@/app/(dashboard)/admin/settings/general/_components/edit-user-modal";
+import { DeleteEmployeeModal } from "@/components/admin/employees/modal/delete-employee";
+import { EditEmployeeModal } from "@/components/admin/employees/modal/edit-employee";
+import NewEmployee from "@/components/admin/overview/modal/new-employee";
+import AddDepartmentModal from "@/components/admin/settings/department/modal/add-department-modal";
+import { EditUserModal } from "@/components/admin/settings/general/edit-user-modal";
 import dynamic from "next/dynamic";
+import { AddPayrollModal } from "./admin/payroll/modal/add-payroll/add-payroll-modal";
+import DeletePayrollModal from "./admin/payroll/modal/delete-payroll-modal";
+import PayrollDetailsSheet from "./admin/payroll/modal/view-payroll-sheet";
 
-const FundWalletModal = dynamic(() => import("./wallet/modals/fund-wallet-modal"), {
+const FundWalletModal = dynamic(() => import("./admin/wallet/modals/fund-wallet-modal"), {
   ssr: false,
 });
 

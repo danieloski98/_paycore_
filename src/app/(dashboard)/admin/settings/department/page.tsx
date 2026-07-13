@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-
-import { DepartmentListCard } from "./_components/department-list-card";
-import { DepartmentForm } from "./_components/department-list-form";
 import { useDeleteDepartment, useGetDepartments } from "@/hooks/use-department";
 import { toast } from "sonner";
 import type { Department } from "@/models/departments";
+import { DepartmentListCard } from "@/components/admin/settings/department/department-list-card";
+import { DepartmentForm } from "@/components/admin/settings/department/department-list-form";
 
 const Department = () => {
 

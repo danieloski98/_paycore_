@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/card"
 import { useModal } from "@/hooks/use-modal"
 import { DataTable } from "@/components/data-table/data-table"
-import { employeeColumns } from "@/components/data-table/columns/employee-columns"
 import { useGetEmployees } from "@/hooks/use-employees"
+import { employeeColumns } from "./employee-columns"
 
 const employeeStats = [
   {
@@ -106,29 +106,6 @@ function EmployeesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 px-0">
-            {/* <DataTable
-              columns={employeeColumns}
-              data={employees}
-              isLoading={isLoading}
-              manualPagination
-              pageCount={pageCount}
-              pagination={pagination}
-              onPaginationChange={setPagination}
-              searchColumn="firstName"
-              searchPlaceholder="Search employees..."
-              filters={[
-                {
-                  label: "Department",
-                  column: "department",
-                  options: [
-                    { label: "Engineering", value: "Engineering" },
-                    { label: "Finance", value: "Finance" },
-                    { label: "Sales", value: "Sales" },
-                    { label: "Operations", value: "Operations" },
-                  ],
-                },
-              ]}
-            /> */}
             <DataTable
               columns={employeeColumns}
               data={employees}

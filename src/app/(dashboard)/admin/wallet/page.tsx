@@ -1,40 +1,22 @@
 'use client';
 import React, { useState } from "react"
 import {
-  ArrowDownLeftIcon,
-  ArrowUpRightIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  CircleDotIcon,
-  CopyIcon,
   DownloadIcon,
-  FunnelIcon,
-  InfoIcon,
-  LandmarkIcon,
   PlusCircleIcon,
   WalletIcon,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { cn } from "@/lib/utils"
 import { DataTable } from "@/components/custom/data-table"
 import { columns } from "./transaction-columns"
 import { useAtomValue } from "jotai"
@@ -44,8 +26,6 @@ import { Spinner } from "@/components/ui/spinner"
 import { useModal } from "@/hooks/use-modal";
 import { EmptyView } from "@/components/custom/empty-view";
 import { toast } from "sonner";
-
-
 
 
 function WalletPage() {
