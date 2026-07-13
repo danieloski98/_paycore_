@@ -9,6 +9,8 @@ import dynamic from "next/dynamic";
 import { AddPayrollModal } from "./admin/payroll/modal/add-payroll/add-payroll-modal";
 import DeletePayrollModal from "./admin/payroll/modal/delete-payroll-modal";
 import PayrollDetailsSheet from "./admin/payroll/modal/view-payroll-sheet";
+import PayslipModal from "./admin/payslip/modal/payslip-modal";
+import LeaveModal from "./admin/leave/modal/leave-modal";
 
 const FundWalletModal = dynamic(() => import("./admin/wallet/modals/fund-wallet-modal"), {
   ssr: false,
@@ -27,6 +29,8 @@ export function ModalProvider() {
       <EditUserModal />
       <AddDepartmentModal />
       <FundWalletModal />
+      <PayslipModal />
+      <LeaveModal />
       {/* <Success */}
     </>
   );

@@ -47,10 +47,6 @@ const employeeStats = [
 
 function EmployeesPage() {
   const { openModal } = useModal()
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  })
 
   // API is 1-indexed, TanStack is 0-indexed — adjust the args below to
   // whatever shape useGetEmployees actually expects.

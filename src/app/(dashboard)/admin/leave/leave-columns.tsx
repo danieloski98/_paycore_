@@ -148,8 +148,8 @@ export const leaveColumns: ColumnDef<LeaveRequestType>[] = [
                         <DropdownMenuContent align="end">
 
                             <DropdownMenuItem
-                                onClick={() => { }
-                                    // openModal("leave-details", row.original)
+                                onClick={() =>
+                                    openModal("leave-details", row.original)
                                 }
                             >
                                 View

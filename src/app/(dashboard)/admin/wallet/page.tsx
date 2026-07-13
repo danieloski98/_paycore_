@@ -17,15 +17,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { DataTable } from "@/components/custom/data-table"
 import { columns } from "./transaction-columns"
 import { useAtomValue } from "jotai"
 import { authUserAtom } from "@/states/auth-user-state"
 import { useGetBalance, useGetPaymentHistory } from "@/hooks/use-wallet"
 import { Spinner } from "@/components/ui/spinner"
 import { useModal } from "@/hooks/use-modal";
-import { EmptyView } from "@/components/custom/empty-view";
 import { toast } from "sonner";
+import { DataTable } from "@/components/customs/data-table";
+import { EmptyView } from "@/components/customs/empty-view";
 
 
 function WalletPage() {
