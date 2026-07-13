@@ -1,3 +1,5 @@
+"use client";
+
 import { DeleteEmployeeModal } from "@/app/(dashboard)/admin/employees/_components/modal/delete-employee";
 import { EditEmployeeModal } from "@/app/(dashboard)/admin/employees/_components/modal/edit-employee";
 import NewEmployee from "@/app/(dashboard)/admin/overview/_components/modal/new-employee";
@@ -6,7 +8,11 @@ import DeletePayrollModal from "@/app/(dashboard)/admin/payroll/_components/moda
 import PayrollDetailsSheet from "@/app/(dashboard)/admin/payroll/_components/modal/view-payroll-sheet";
 import AddDepartmentModal from "@/app/(dashboard)/admin/settings/department/_components/modal/add-department-modal";
 import { EditUserModal } from "@/app/(dashboard)/admin/settings/general/_components/edit-user-modal";
-import FundWalletModal from "./wallet/modals/fund-wallet-modal";
+import dynamic from "next/dynamic";
+
+const FundWalletModal = dynamic(() => import("./wallet/modals/fund-wallet-modal"), {
+  ssr: false,
+});
 
 
 export function ModalProvider() {
