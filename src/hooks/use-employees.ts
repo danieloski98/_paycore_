@@ -14,9 +14,13 @@ export interface PaginatedResponse<T> {
 }
 
 export const useAddEmployee = () => {
+    const queryClient = useQueryClient()
     const { isPending, mutate, error } = useMutation({
         mutationFn: (payload: AddEmployeePayload) => add_employee(payload),
-        mutationKey: ["add_employee"]
+        mutationKey: ["add_employee"],
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["employees"] });
+        },
     });
 
     return {
