@@ -1,5 +1,5 @@
 import { ChangePasswordPayload, CompanyUserLoginPayload, CompanyUserSetupPayload, CreateCompanyUserAccountPayload, ForgotPasswordPayload, VerifyOTPPayload } from '@/lib/auth/payload'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { change_passord, company_user_login, company_user_setup, create_company_account, forgot_passord } from '@/services/auth/auth-service';
 import { GeneralResponse } from '@/lib/types';
 import { AxiosError, AxiosResponse } from 'axios';

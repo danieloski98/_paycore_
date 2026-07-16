@@ -57,6 +57,7 @@ export default function AddEmployeeForm() {
     departments,
     isLoading,
   } = useGetDepartments();
+  console.log(departments)
 
   const onSubmit: SubmitHandler<AddEmployeeFormValues> = (
     values
@@ -198,7 +199,7 @@ export default function AddEmployeeForm() {
                       </SelectItem>
                     ) : departments?.length ? (
                       departments?.map(({ id, name }) => (
-                        <SelectItem key={id} value={id}>
+                        <SelectItem key={id} value={name}>
                           {name}
                         </SelectItem>
                       ))

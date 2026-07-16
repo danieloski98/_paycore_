@@ -19,18 +19,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { leaveColumns } from "@/components/data-table/columns/leave-columns"
 import { DataTable } from "@/components/data-table/data-table"
 import { leaveRequests } from "@/models/leave-model"
+import { leaveColumns } from "./leave-columns"
 
 const stats = [
   {
@@ -73,10 +64,6 @@ function LeavePage() {
           <Button variant="outline">
             <DownloadIcon data-icon="inline-start" />
             Export Report
-          </Button>
-          <Button>
-            <PlusIcon data-icon="inline-start" />
-            Request Leave
           </Button>
         </div>
       </section>

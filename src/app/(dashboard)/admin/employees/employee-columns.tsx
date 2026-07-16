@@ -89,6 +89,7 @@ export const employeeColumns: ColumnDef<EmployeeType>[] = [
     filterFn: "equals", // exact match for dropdown filter
     cell: ({ row }) => {
       const employee = row.original;
+      console.log(employee)
       return (
         <div className="flex items-center gap-3">
           <p className="text-sm text-black">{employee.department}</p>
