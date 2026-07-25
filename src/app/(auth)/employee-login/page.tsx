@@ -10,6 +10,8 @@ import { Spinner } from '@/components/ui/spinner'
 import { useEmployeeLogin } from '@/hooks/use-auth'
 import useForm from '@/hooks/use-form'
 import { EmployeeLoginFormValues, employeeLoginSchema } from '@/lib/schemas'
+import { Employee } from '@/models/employee-models'
+import { employeeAtom } from '@/states/auth-user-state'
 import { userTypeAtom } from '@/states/user-type-state'
 import { useAtom } from 'jotai'
 import { Eye, EyeOff } from 'lucide-react'
@@ -20,10 +22,11 @@ import { toast } from 'sonner'
 
 function EmployeeLogin() {
     const router = useRouter()
-    const [,setUserType] = useAtom(userTypeAtom)
+    const [, setUserType] = useAtom(userTypeAtom)
+    const [, setAuthUser] = useAtom(employeeAtom)
     const [successMessage, setSuccessMessage] = useState('')
     const [showPassword, setShowPassword] = useState(false)
-    const { isPending, mutate: companyUserLogin, error } = useEmployeeLogin()
+    const { isPending, mutate: employeeLogin, error } = useEmployeeLogin()
 
 
     useEffect(() => {
@@ -39,7 +42,7 @@ function EmployeeLogin() {
         },
     })
 
-    const serverError =  error?.message
+    const serverError = error?.message
     // console.log(serverError)
 
     const onSubmit: SubmitHandler<EmployeeLoginFormValues> = (values) => {
@@ -49,9 +52,11 @@ function EmployeeLogin() {
         }
 
         setSuccessMessage('')
-        companyUserLogin(payload, {
-            onSuccess: () => {
+        employeeLogin(payload, {
+            onSuccess: (response) => {
                 setUserType('EMPLOYEE')
+                setAuthUser(response?.data?.data! as Employee);
+                localStorage.setItem('token', (response?.data?.data as any)?.token as string);
                 toast.success(successMessage || 'Log In successfully', {
                     position: "bottom-right",
                 })
@@ -81,7 +86,6 @@ function EmployeeLogin() {
                 </CardHeader>
                 <CardContent>
                     {renderForm(<form onSubmit={handleSubmit(onSubmit)}>
-
                         <div className="flex flex-col gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
@@ -89,8 +93,10 @@ function EmployeeLogin() {
                                     id="email"
                                     type="email"
                                     placeholder="m@example.com"
+                                    aria-invalid={Boolean(errors.email)}
                                     required
                                     className='h-10 text-sm font-medium tracking-wide rounded-sm outline-none focus-within:border-0 focus-within:outline-0'
+                                    {...register('email')}
                                 />
                             </div>
                             <div className='flex flex-col gap-1'>

@@ -14,30 +14,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { useModal } from "@/hooks/use-modal";
+import { Payslip } from "@/models/payslip-model";
+import { format, isValid } from "date-fns";
+import { cn, getPayslipStatusStyle } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
-export type Payslip = {
-  id: number;
-  name: string;
-  email: string;
-  position: string;
-  amount: string;
-  paymentDate: string;
-  avatar: string;
-};
 
 export const payslipColumns: ColumnDef<Payslip>[] = [
   {
     accessorKey: "name",
     header: "Employee",
+    filterFn: "equals", // exact match for dropdown filter
     cell: ({ row }) => {
-      const employee = row.original;
-
+      const employee = row?.original.Employee;
       return (
         <div className="flex items-center gap-3 pl-4">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={employee.avatar} />
+            <AvatarImage src={employee?.picture ?? ""} />
             <AvatarFallback>
-              {employee.name
+              {employee?.firstName
                 .split(" ")
                 .map((n) => n[0])
                 .join("")}
@@ -45,10 +40,10 @@ export const payslipColumns: ColumnDef<Payslip>[] = [
           </Avatar>
 
           <div>
-            <p className="font-medium">{employee.name}</p>
+            <p className="font-medium">{employee?.firstName}</p>
 
             <p className="text-xs text-muted-foreground">
-              {employee.email}
+              {employee?.email}
             </p>
           </div>
         </div>
@@ -59,10 +54,10 @@ export const payslipColumns: ColumnDef<Payslip>[] = [
   {
     accessorKey: "position",
     header: "Position",
-
+    filterFn: "equals", // exact match for dropdown filter
     cell: ({ row }) => (
       <span className="ml-4">
-        {row.original.position}
+        {row?.original?.Employee?.position}
       </span>
     ),
   },
@@ -70,23 +65,46 @@ export const payslipColumns: ColumnDef<Payslip>[] = [
   {
     accessorKey: "amount",
     header: "Net Pay",
-
+    filterFn: "equals", // exact match for dropdown filter
     cell: ({ row }) => (
       <span className="ml-4 font-semibold">
-        {row.original.amount}
+        ₦{row?.original?.basicSalary}
       </span>
     ),
   },
+  {
+    accessorKey: "status",
+    header: "Status",
+    filterFn: (row, columnId, value) => {
+      return row.getValue(columnId) === value;
+    },
+    cell: ({ row }) => {
+      const status = row.original.status;
+      const styles = getPayslipStatusStyle(status ?? "");
 
+      return (
+        <Badge
+          className={cn("ml-4", styles.bg, styles.text, styles.border)}
+        >
+          {status}
+        </Badge>
+      );
+    },
+  },
   {
     accessorKey: "paymentDate",
     header: "Payment Date",
+    filterFn: "equals", // exact match for dropdown filter
+    cell: ({ row }) => {
+      const paymentDate = row.original.paymentDate
+      const date = new Date(paymentDate)
+      return (
+        <span className="ml-4">
+          {isValid(date) ? format(date, "dd MMM yyyy") : "--"}
+        </span>
+      )
 
-    cell: ({ row }) => (
-      <span className="ml-4">
-        {row.original.paymentDate}
-      </span>
-    ),
+    }
   },
 
   {
@@ -119,22 +137,6 @@ export const payslipColumns: ColumnDef<Payslip>[] = [
               >
                 View Payslip
               </DropdownMenuItem>
-{/* 
-              <DropdownMenuItem
-                onClick={() =>
-                  console.log("Download PDF")
-                }
-              >
-                Download PDF
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onClick={() =>
-                  console.log("Send Email")
-                }
-              >
-                Send via Email
-              </DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

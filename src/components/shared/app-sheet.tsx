@@ -28,7 +28,7 @@ const sizes = {
   sm: "w-[400px] sm:max-w-[400px]",
   md: "w-[500px] sm:max-w-[500px]",
   lg: "w-[640px] sm:max-w-[640px]",
-  xl: "w-[800px] sm:max-w-[800px]",
+  xl: "w-[800px] sm:max-w-[1200px]",
   full: "w-screen max-w-screen",
 };
 

@@ -6,6 +6,7 @@ export type ModalType =
   | "delete-employee"
   | "notification"
   | "add-payroll"
+  | "edit-payroll"
   | "success-payroll"
   | "delete-payroll"
   | "payroll-details"
@@ -13,7 +14,10 @@ export type ModalType =
   | "add-department"
   | "fund-wallet"
   | "payslip-details"
-  | "leave-details"
+  | "manage-leave"
+  | "add-bank"
+  | "leave-request"
+  | "update-employee"
   | null;
 
 export interface ModalState<T = unknown> {

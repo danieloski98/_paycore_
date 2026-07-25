@@ -34,4 +34,19 @@ httpClient.interceptors.response.use(
   },
 );
 
+httpClient.interceptors.response.use(
+  (response) => response,
+  (error: AxiosError) => {
+    console.log("Status:", error.response?.status);
+    console.log("Data:", error.response?.data);
+
+    if (error.response?.status === 401) {
+      console.log("Removing token...");
+      localStorage.removeItem("token");
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 export default httpClient;

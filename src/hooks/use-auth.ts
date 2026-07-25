@@ -1,6 +1,6 @@
-import { ChangePasswordPayload, CompanyUserLoginPayload, CompanyUserSetupPayload, CreateCompanyUserAccountPayload, ForgotPasswordPayload, VerifyOTPPayload } from '@/lib/auth/payload'
+import { ChangeemployeePasswordPayload, ChangePasswordPayload, CompanyUserLoginPayload, CompanyUserSetupPayload, CreateCompanyUserAccountPayload, ForgotPasswordPayload, VerifyOTPPayload } from '@/lib/auth/payload'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { change_passord, company_user_login, company_user_setup, create_company_account, forgot_passord } from '@/services/auth/auth-service';
+import { change_employee_passord, change_passord, company_user_login, company_user_setup, create_company_account, employee_login, forgot_passord } from '@/services/auth/auth-service';
 import { GeneralResponse } from '@/lib/types';
 import { AxiosError, AxiosResponse } from 'axios';
 
@@ -33,7 +33,7 @@ export const useCompanyLogin = () => {
 export const useEmployeeLogin = () => {
     // you can now make use of this hook in your components to create a company user account
     const { isPending, mutate, error } = useMutation<AxiosResponse<GeneralResponse<unknown>>, AxiosError<GeneralResponse>, CompanyUserLoginPayload>({
-        mutationFn: async (payload) => company_user_login(payload),
+        mutationFn: async (payload) => employee_login(payload),
         mutationKey: ['employee_login'],
     });
     return {
@@ -84,6 +84,20 @@ export const useChangePassword = () => {
     const { isPending, mutate, error } = useMutation<AxiosResponse<GeneralResponse<unknown>>, AxiosError<GeneralResponse>, ChangePasswordPayload>({
         mutationFn: async (payload) => change_passord(payload),
         mutationKey: ['forgot_password'],
+    });
+    return {
+        isPending,
+        mutate,
+        error
+    }
+}
+
+
+export const useChangeEmployeePassword = (id: string) => {
+    // you can now make use of this hook in your components to create a company user account
+    const { isPending, mutate, error } = useMutation<AxiosResponse<GeneralResponse<unknown>>, AxiosError<GeneralResponse>, ChangeemployeePasswordPayload>({
+        mutationFn: async (payload) => change_employee_passord(id, payload),
+        mutationKey: ['forgot_password', id],
     });
     return {
         isPending,

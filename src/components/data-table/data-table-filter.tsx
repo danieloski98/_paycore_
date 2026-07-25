@@ -58,9 +58,9 @@ export function DataTableFilter<TData, TValue>({
           All {label}
         </SelectItem>
 
-        {filterOptions.map((option) => (
+        {filterOptions.map((option, idx) => (
           <SelectItem
-            key={option.value}
+            key={`${option.value}-${idx}`}
             value={option.value}
           >
             {option.label}

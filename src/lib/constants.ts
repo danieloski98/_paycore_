@@ -91,6 +91,34 @@ export const SidebarLinks = [
   },
 ]
 
+export const employeeSidebarLinks = [
+  {
+    label: "Overview",
+    href: "/employee/overview",
+    icon: LayoutDashboardIcon,
+  },
+  // {
+  //   label: "Employees",
+  //   href: "/admin/employees",
+  //   icon: UsersIcon,
+  // },
+  {
+    label: "Salary & Payslip",
+    href: "/employee/salary-payslip",
+    icon: CreditCardIcon,
+  },
+  {
+    label: "Leave",
+    href: "/employee/leave",
+    icon: FileTextIcon,
+  },
+  {
+    label: "Settings",
+    href: "/employee/settings",
+    icon: SettingsIcon,
+  },
+]
+
 export const months = [
   { label: "January", value: "0" },
   { label: "February", value: "1" },

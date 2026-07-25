@@ -9,6 +9,7 @@ import {
   CreditCardIcon,
   Download,
   Edit2,
+  Loader2,
   Mail,
   MailIcon,
   MapPin,
@@ -38,12 +39,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useDeleteEmployee, useGetEmployeeById } from "@/hooks/use-employees"
+import { useDeleteEmployee, useGetCompanyEmployeeById, useGetEmployeeById } from "@/hooks/use-employees"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useModal } from "@/hooks/use-modal"
 import { format } from "date-fns"
 import { delete_employee } from "@/services/employees/employee-services"
 import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
 
 
 
@@ -100,8 +102,8 @@ function EmployeeDetailsPage() {
     pathname.startsWith(`/admin/employee/${params.employeeId}`);
 
   const { mutate: deleteEmployee, isPending } = useDeleteEmployee();
-  const { employee, isLoading } = useGetEmployeeById(params.employeeId);
-  console.log(employee)
+  const { employee, isPending: employeePending } = useGetCompanyEmployeeById(params.employeeId);
+
 
   const deactivateEmployee = () => {
     if (!employee?.id) return;
@@ -130,36 +132,56 @@ function EmployeeDetailsPage() {
         {/* Employee Card */}
         <div className="lg:col-span-2">
           <Card>
-            <CardContent className="pt-6">
-              <div className="flex gap-6">
-                <div className="relative">
-                  <Avatar className="size-24">
-                    <AvatarImage src={employee?.picture} />
-                    <AvatarFallback className="font-semibold text-2xl">
-                      {employee?.firstName[0]}
-                      {employee?.lastName[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h2 className="text-2xl font-bold">{employee?.firstName} {employee?.lastName}</h2>
-                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">ACTIVE</Badge>
-                  </div>
-                  <p className="text-muted-foreground mb-4">{employee?.position} • {employee?.department}</p>
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span>{employee?.email}</span>
+            {employeePending ? (
+              <EmployeeSkeleton />
+            ) : (
+              employee && (
+                <CardContent className="pt-6">
+                  <div className="flex gap-6">
+                    <div className="relative">
+                      <Avatar className="size-24">
+                        <AvatarImage src={employee.picture} />
+                        <AvatarFallback className="text-2xl font-semibold">
+                          {employee.firstName[0]}
+                          {employee.lastName[0]}
+                        </AvatarFallback>
+                      </Avatar>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span>{employee?.phone}</span>
+
+                    <div className="flex-1">
+                      <div className="mb-2 flex items-center gap-2">
+                        <h2 className="text-2xl font-bold">
+                          {employee.firstName} {employee.lastName}
+                        </h2>
+
+                        <Badge
+                          variant="outline"
+                          className="border-emerald-200 bg-emerald-50 text-emerald-700"
+                        >
+                          ACTIVE
+                        </Badge>
+                      </div>
+
+                      <p className="mb-4 text-muted-foreground">
+                        {employee.position} • {employee.department}
+                      </p>
+
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-sm">
+                          <Mail className="h-4 w-4 text-muted-foreground" />
+                          <span>{employee.email}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-sm">
+                          <Phone className="h-4 w-4 text-muted-foreground" />
+                          <span>{employee.phone}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </CardContent>
+                </CardContent>
+              )
+            )}
           </Card>
         </div>
 
@@ -174,10 +196,6 @@ function EmployeeDetailsPage() {
               <Edit2 className="h-4 w-4 mr-2" />
               Edit Profile
             </Button>
-            {/* <Button variant="outline" className="w-full justify-start" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Generate Paystub
-            </Button> */}
             <Button variant="outline" className="w-full justify-start text-destructive hover:text-destructive" size="sm" onClick={deactivateEmployee}>
               <Trash2 className="h-4 w-4 mr-2" />
               Deactivate Employee
@@ -364,3 +382,39 @@ function EmployeeDetailsPage() {
 }
 
 export default EmployeeDetailsPage
+
+export const EmployeeSkeleton = () => {
+  return (
+    <CardContent className="pt-6">
+      <div className="flex gap-6">
+        {/* Avatar */}
+        <Skeleton className="size-24 rounded-full" />
+
+        {/* Content */}
+        <div className="flex-1 space-y-4">
+          {/* Name + Badge */}
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-8 w-56" />
+            <Skeleton className="h-6 w-20 rounded-full" />
+          </div>
+
+          {/* Position */}
+          <Skeleton className="h-5 w-72" />
+
+          {/* Contact */}
+          <div className="space-y-3 pt-2">
+            <div className="flex items-center gap-2">
+              <Skeleton className="size-4 rounded" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Skeleton className="size-4 rounded" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </CardContent>
+  )
+}

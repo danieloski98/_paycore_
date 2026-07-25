@@ -72,7 +72,7 @@ export function PayrollStepper({ steps, currentStep }: Props) {
               </div>
 
               <p
-                className={`mt-3 max-w-23 text-center text-[12px] leading-tight ${isCurrent
+                className={`mt-3 max-w-full mx-auto text-center text-[12px] leading-tight ${isCurrent
                     ? "font-semibold text-[#14213D]"
                     : isComplete
                       ? "font-medium text-[#4A5578]"

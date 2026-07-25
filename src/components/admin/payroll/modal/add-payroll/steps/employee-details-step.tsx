@@ -11,7 +11,6 @@ import { useMemo, useState } from "react";
 
 
 export default function EmployeeDetailsStep() {
-  const [user] = useAtom(authUserAtom)
   const payroll = useAtomValue(payrollAtom);
   const updatePayroll = useSetAtom(updatePayrollAtom);
   const [search, setSearch] = useState("");

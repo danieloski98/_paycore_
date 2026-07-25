@@ -1,3 +1,4 @@
+import { Employee } from "@/models/employee-models";
 import { atomWithStorage, createJSONStorage } from "jotai/utils";
 
 export interface AuthUser {
@@ -16,13 +17,27 @@ export interface AuthUser {
     deletedAt: string | null;
 }
 
-const authUserStorage = createJSONStorage<AuthUser | null>(
-    () => (typeof window !== 'undefined' ? window.localStorage : {
-        getItem: () => null,
-        setItem: () => {},
-        removeItem: () => {},
-    })
+// Create a safe storage provider that works with SSR
+const createSafeStorage = () => {
+  if (typeof window === "undefined") {
+    return {
+      getItem: () => null,
+      setItem: () => {},
+      removeItem: () => {},
+    };
+  }
+  return window.localStorage;
+};
+
+const employeeStorage = createJSONStorage<Employee | null>(() => createSafeStorage());
+
+export const employeeAtom = atomWithStorage<Employee | null>(
+  "paycore:employee",
+  null,
+  employeeStorage
 );
+
+const authUserStorage = createJSONStorage<AuthUser | null>(() => createSafeStorage());
 
 export const authUserAtom = atomWithStorage<AuthUser | null>(
     "paycore:auth-user",

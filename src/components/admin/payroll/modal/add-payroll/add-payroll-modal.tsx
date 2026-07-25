@@ -1,69 +1,102 @@
 "use client";
 
-import { useState } from "react";
-import { useAtomValue } from "jotai";
+import { useEffect, useState } from "react";
+import { useAtomValue, useSetAtom } from "jotai";
 
-// import { payrollAtom } from "@/states/payrollState";
-// import { useCreatePayroll } from "@/hooks/usePayroll";
 import { useModal } from "@/hooks/use-modal";
 
 import { Button } from "@/components/ui/button";
 
 import { AppDialog } from "@/components/shared/app-dialog";
-import { payrollAtom } from "@/states/payroll-state";
+import { payrollAtom, PayrollDraft, resetPayrollAtom } from "@/states/payroll-state";
 import { EmployeeDetailsStep, PayrollInfoStep } from "./steps";
 import { PayrollStepper } from "./payroll-stepper";
-import { useCreatePayroll } from "@/hooks/use-payroll";
+import { useCreatePayroll, useEditPayroll } from "@/hooks/use-payroll";
 
-const steps = [
-  {
-    title: "Employee Details",
-    component: EmployeeDetailsStep,
-  },
-  {
-    title: "Payroll Info",
-    component: PayrollInfoStep,
-  },
-];
+// const steps = [
+//   {
+//     title: "Employee Details",
+//     component: EmployeeDetailsStep,
+//   },
+//   {
+//     title: "Payroll Info",
+//     component: PayrollInfoStep,
+//   },
+// ];
+
+const stepTitles = ["Employee Details", "Payroll Info"];
+const stepComponents = [EmployeeDetailsStep, PayrollInfoStep];
+
+interface AddPayrollModalData {
+  payroll?: PayrollDraft;
+}
 
 export function AddPayrollModal() {
   const payroll = useAtomValue(payrollAtom);
+  const resetPayroll = useSetAtom(resetPayrollAtom);
 
-  const { openModal, closeModal, isOpen } = useModal();
+  const { closeModal, isOpen, data } = useModal();
+  const modalOpen = isOpen("add-payroll") || isOpen("edit-payroll");
+  const editingPayroll = (data as AddPayrollModalData | undefined)?.payroll
+  const isEditMode = Boolean(editingPayroll?.id);
 
-  const { mutate, isPending } = useCreatePayroll();
 
   const [step, setStep] = useState(0);
+  const CurrentStep = stepComponents[step];
 
-  const CurrentStep = steps[step].component;
+  const { mutate: createPayroll, isPending: creating } = useCreatePayroll();
+  const { mutate: updatePayroll, isPending: updating } = useEditPayroll();
+
+  const isPending = creating || updating
+
+  useEffect(() => {
+    if (modalOpen) {
+      resetPayroll(editingPayroll);
+      setStep(0);
+    }
+  }, [modalOpen, editingPayroll, resetPayroll]);
+
 
   function reset() {
     setStep(0);
     closeModal();
   }
 
-  function submit() {
-    mutate(payroll, {
-      onSuccess() {
-        reset();
 
-        // openModal("success-payroll");
-      },
-    });
+  function submit() {
+    if (isEditMode && editingPayroll?.id) {
+      updatePayroll(
+        { ...payroll, id: editingPayroll.id },
+        {
+          onSuccess() {
+            reset();
+          },
+        }
+      );
+    } else {
+      createPayroll(payroll, {
+        onSuccess() {
+          reset();
+        },
+      });
+    }
   }
+
+
 
   return (
     <AppDialog
-      open={isOpen("add-payroll")}
+      open={modalOpen}
       onOpenChange={reset}
-      title="Add Payroll"
+      title={isEditMode ? "Edit Payroll" : "Add Payroll"}
       size="lg"
     >
       <div className="space-y-8">
 
+
         <PayrollStepper
           currentStep={step}
-          steps={steps.map(s => s.title)}
+          steps={stepTitles}
         />
 
         <CurrentStep />
@@ -79,10 +112,14 @@ export function AddPayrollModal() {
             </Button>
           )}
 
-          {step < steps.length - 1 ? (
+          {step < stepComponents.length - 1 ? (
             <Button
               disabled={!payroll.employeeIds.length}
-              onClick={() => setStep(step + 1)}
+              onClick={() => {
+                setStep((prev) => {
+                  return prev + 1;
+                });
+              }}
             >
               Next
             </Button>
@@ -91,7 +128,15 @@ export function AddPayrollModal() {
               disabled={isPending}
               onClick={submit}
             >
-              {isPending ? "Creating..." : "Create Payroll"}
+
+              {isPending
+                ? isEditMode
+                  ? "Saving..."
+                  : "Creating..."
+                : isEditMode
+                  ? "Save Changes"
+                  : "Create Payroll"}
+
             </Button>
           )}
         </div>

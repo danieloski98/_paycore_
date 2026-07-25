@@ -1,9 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, Eye, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -11,19 +9,18 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal";
-import { EmployeeType } from "@/models/employee-models";
-import { LeaveRequestType } from "@/models/leave-model";
 import { format } from "date-fns";
+import { LeaveRequest } from "@/models/leave-model";
+import { cn } from "@/lib/utils";
 
 
-export const leaveColumns: ColumnDef<LeaveRequestType>[] = [
+export const leaveColumns: ColumnDef<LeaveRequest>[] = [
     {
         accessorKey: "employee",
         header: "Employee",
         cell: ({ row }) => {
-            const employee = row.original.employee;
+            const employee = row.original.Employee;
 
             return (
                 <div className="pl-4">
@@ -91,9 +88,10 @@ export const leaveColumns: ColumnDef<LeaveRequestType>[] = [
 
         cell: ({ row }) => {
             const status = row.original.Status;
+            console.log(status)
 
             const styles = {
-                APPROVED:
+                ACCEPTED:
                     "bg-green-100 text-green-700",
 
                 PENDING:
@@ -108,8 +106,10 @@ export const leaveColumns: ColumnDef<LeaveRequestType>[] = [
 
             return (
                 <span
-                    className={`ml-4 inline-flex rounded-full px-3 py-1 text-xs font-medium ${styles[status]
-                        }`}
+                    className={cn(
+                        "ml-4 inline-flex rounded-full px-3 py-1 text-xs font-medium",
+                        styles[status] ?? styles.PENDING
+                    )}
                 >
                     {status}
                 </span>
@@ -149,28 +149,11 @@ export const leaveColumns: ColumnDef<LeaveRequestType>[] = [
 
                             <DropdownMenuItem
                                 onClick={() =>
-                                    openModal("leave-details", row.original)
+                                    openModal("manage-leave", row.original)
                                 }
                             >
                                 View
                             </DropdownMenuItem>
-
-                            <DropdownMenuItem
-                                onClick={() => { }
-                                    // openModal("edit-leave", row.original)
-                                }
-                            >
-                                Edit
-                            </DropdownMenuItem>
-
-                            <DropdownMenuItem
-                                onClick={() => { }
-                                    // openModal("delete-leave", row.original)
-                                }
-                            >
-                                Delete
-                            </DropdownMenuItem>
-
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

@@ -35,10 +35,8 @@ const ROLE_OPTIONS: { label: string; value: AuthUser["role"] }[] = [
 ];
 
 export function EditUserModal() {
-    // `data` is the user passed via openModal("edit-user", someUser) —
-    // this is the record being edited, NOT necessarily the logged-in viewer
     const [user, setAuthUser] = useAtom(authUserAtom);
-    const { isOpen, closeModal, data } = useModal();
+    const { isOpen, closeModal } = useModal();
     // const user = data as AuthUser | undefined;
 
     const { mutate, isPending } = useUpdateUser(user?.id ?? "");
