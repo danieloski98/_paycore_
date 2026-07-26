@@ -11,6 +11,7 @@ export default function PayrollInfoStep() {
   const payroll = useAtomValue(payrollAtom);
 
   const updatePayroll = useSetAtom(updatePayrollAtom);
+  const isExistingPayroll = Boolean(payroll.id);
 
   return (
     <div className="space-y-6">
@@ -27,6 +28,8 @@ export default function PayrollInfoStep() {
       <PayrollMonthPicker
         month={payroll.month}
         year={payroll.year}
+        disableMonth={isExistingPayroll}
+        disableYear={isExistingPayroll}
         onChange={(month, year) =>
           updatePayroll({
             month,

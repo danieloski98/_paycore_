@@ -14,6 +14,7 @@ type MonthYearPickerProps = {
   year: number;
   onChange: (month?: number, year?: number) => void;
   disableYear?: boolean;
+  disableMonth?: boolean;
 };
 
 const months = [
@@ -35,13 +36,20 @@ export default function PayrollMonthPicker({
   month,
   year,
   onChange,
-  disableYear = true,
+  // FIX: this defaulted to `true` with nothing overriding it anywhere,
+  // which meant the year input rendered but was permanently disabled for
+  // every caller. Defaulting to editable, and adding a matching
+  // `disableMonth` so callers can lock the whole period consistently
+  // (e.g. once a payroll already exists) instead of only half of it.
+  disableYear = false,
+  disableMonth = false,
 }: MonthYearPickerProps) {
   return (
     <div className="flex gap-4">
       <Select
         value={month?.toString()}
         onValueChange={(value) => onChange(Number(value), year)}
+        disabled={disableMonth}
       >
         <SelectTrigger className="flex-1">
           <SelectValue placeholder="Select Month" />

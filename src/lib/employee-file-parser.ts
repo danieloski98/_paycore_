@@ -1,4 +1,4 @@
-import { EmployeeType } from "@/models/employee-models";
+import { Employee, EmployeeType } from "@/models/employee-models";
 
 /**
  * Read file as ArrayBuffer
@@ -29,10 +29,10 @@ export const validateAndTransformEmployeeData = (
 ): {
     isValid: boolean;
     errors: string[];
-    transformedData: EmployeeType[];
+    transformedData: Employee[];
 } => {
     const errors: string[] = [];
-    const transformedData: EmployeeType[] = [];
+    const transformedData: Employee[] = [];
 
     if (!data.length) {
         return {
@@ -45,7 +45,7 @@ export const validateAndTransformEmployeeData = (
     data.forEach((item, index) => {
         const rowErrors: string[] = [];
 
-        const employee: EmployeeType = {
+        const employee: Employee = {
             id: "",
             firstName: "",
             lastName: "",

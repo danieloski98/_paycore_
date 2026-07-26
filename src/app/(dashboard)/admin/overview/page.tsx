@@ -2,9 +2,7 @@
 import Link from "next/link"
 import {
   AlertCircleIcon,
-  ArrowUpRightIcon,
   CalendarClockIcon,
-  HandCoinsIcon,
   LandmarkIcon,
   UserRoundCheckIcon,
   UsersIcon,
@@ -20,13 +18,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+
 import { PayrollTrendChart } from "@/components/charts/payroll-charts"
 import { useModal } from "@/hooks/use-modal"
-import { DataTable } from "@/components/data-table/data-table"
-import { Employee, employees } from "@/components/data-table/sample-data/employee-data"
-import { payrollData } from "@/components/data-table/sample-data/payroll-data"
+import { DataTable, TableFilter } from "@/components/data-table/data-table"
 import { payrollColumns } from "@/components/data-table/columns/payroll-column"
+import { useGetPayrolls } from "@/hooks/use-payroll"
+import { PayrollItem } from "@/models/payroll-model"
+import { FilterOption } from "@/components/data-table/data-table-filter"
 
 const stats = [
   {
@@ -63,40 +62,62 @@ const stats = [
   },
 ]
 
-const payrollTrend = [
-  { month: "Jan", value: 38 },
-  { month: "Feb", value: 55 },
-  { month: "Mar", value: 44 },
-  { month: "Apr", value: 69 },
-  { month: "May", value: 64 },
-  { month: "Jun", value: 88, active: true },
-  { month: "Jul", value: 29 },
-]
-
-const activities = [
-  { batchId: "#PRL-2405", date: "May 28, 2024", amount: "₦4,120,500", employees: 124 },
-  { batchId: "#PRL-2404", date: "Apr 27, 2024", amount: "₦3,980,200", employees: 122 },
-  { batchId: "#PRL-2403", date: "Mar 28, 2024", amount: "₦3,850,000", employees: 120 },
-  { batchId: "#PRL-2402", date: "Feb 27, 2024", amount: "₦3,850,000", employees: 120 },
-  { batchId: "#PRL-2401", date: "Jan 29, 2024", amount: "₦3,720,000", employees: 118 },
-]
-
-const complianceChecks = [
-  { name: "PAYE Remittance", status: "Current" },
-  { name: "NHF Schedule", status: "Current" },
-  { name: "Pension Fund", status: "Processing" },
-]
-
-const quickResources = [
-  "User Manual",
-  "Nigeria Labor Law Guide",
-  "Holiday Calendar 2024",
-]
-
 
 function OverviewPage() {
   const { openModal } = useModal();
 
+  const { data: payrollData = [], isLoading } = useGetPayrolls()
+
+  const payrolls = (payrollData ?? []) as PayrollItem[];
+
+  const yearOptions: FilterOption[] = [
+    ...new Set(
+      payrolls
+        .map((p) => p.year)
+        .filter((year): year is number => year != null)
+    ),
+  ]
+    .sort((a, b) => b - a)
+    .map((year) => ({
+      label: String(year),
+      value: String(year),
+    }));
+
+
+  const payrollFilters: TableFilter<PayrollItem>[] = [
+    {
+      label: "Year",
+      column: "year",
+      options: yearOptions,
+    },
+    {
+      label: "Month",
+      column: "month",
+      options: [
+        { label: "January", value: "0" },
+        { label: "February", value: "1" },
+        { label: "March", value: "2" },
+        { label: "April", value: "3" },
+        { label: "May", value: "4" },
+        { label: "June", value: "5" },
+        { label: "July", value: "6" },
+        { label: "August", value: "7" },
+        { label: "September", value: "8" },
+        { label: "October", value: "9" },
+        { label: "November", value: "10" },
+        { label: "December", value: "11" },
+      ],
+    },
+    {
+      label: "Status",
+      column: "status",
+      options: [
+        { label: "PENDING", value: "PENDING" },
+        { label: "PROCESSING", value: "PROCESSING" },
+        { label: "SUCCESSFULL", value: "SUCCESSFULL" },
+      ],
+    },
+  ];
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">
@@ -113,10 +134,10 @@ function OverviewPage() {
             <UserRoundCheckIcon data-icon="inline-start" />
             Add Employee
           </Button>
-          <Button>
+          {/* <Button>
             <HandCoinsIcon data-icon="inline-start" />
             Run Payroll
-          </Button>
+          </Button> */}
         </div>
       </section>
 
@@ -159,8 +180,10 @@ function OverviewPage() {
               <DataTable
                 data={payrollData}
                 columns={payrollColumns}
+                isLoading={isLoading}
                 searchColumn="name"
                 searchPlaceholder="Search payroll..."
+                filters={payrollFilters}
               />
             </CardContent>
           </Card>
