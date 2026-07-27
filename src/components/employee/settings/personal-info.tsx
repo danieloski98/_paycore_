@@ -17,8 +17,6 @@ const PersonalInfo = () => {
     const [user, setUser] = useAtom(employeeAtom)
     const fileRef = useRef<HTMLInputElement>(null);
 
-    console.log(user)
-
     const [preview, setPreview] = useState(
         user?.picture ?? ""
     );
@@ -34,21 +32,15 @@ const PersonalInfo = () => {
         if (!file) return;
 
         // preview immediately
-        setPreview(URL.createObjectURL(file));
-
+        
         updatePicture(
             {
                 id: user?.id!,
                 file,
             },
             {
-                onSuccess: (res) => {
-                    setUser((prev) => prev
-                        ? {
-                            ...prev,
-                        }
-                        : prev
-                    );
+                onSuccess: () => {
+                    setPreview(URL.createObjectURL(file));
                     toast.success("Profile picture updated");
                 },
                 onError: (err: any) => {
@@ -82,7 +74,7 @@ const PersonalInfo = () => {
                 <div className='flex gap-10'>
                     <div className="flex flex-col items-center gap-4">
                         <Avatar className="h-24 w-24 cursor-pointer" onClick={() => fileRef.current?.click()}>
-                            <AvatarImage src={preview ?? undefined} />
+                            <AvatarImage src={user?.picture ?? ""} />
 
                             <AvatarFallback>
                                 {user?.firstName?.[0]}

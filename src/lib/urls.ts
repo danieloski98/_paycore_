@@ -32,7 +32,8 @@ export const URLS = {
         // `${URLS.payroll}/${payrollId}/start-processing`
     },
     payslip: {
-        get_payslip_by_payroll_id: (payrollId: string) => `/payslips/payroll/${payrollId}`
+        get_payslip_by_payroll_id: (payrollId: string) => `/payslips/payroll/${payrollId}`,
+        get_employee_payslips: (employeeId: string) => `/payslips/employee/${employeeId}`,
     },
     leave: {
         create_leave: "/leave",
@@ -46,6 +47,7 @@ export const URLS = {
         get_banks: '/bank',
         create_bank: '/bank',
         validate_bank: '/bank/validate',
+        get_employee_banks: "/bank/employee",
         primary_bank: (bankId: string) => `/bank/${bankId}/primary`,
         delete_bank: (bankId: string) => `/bank/${bankId}`
     },
@@ -65,8 +67,11 @@ export const URLS = {
     },
     wallet: {
         get_wallet_balance: (company_id: string) => `/wallet/${company_id}`,
+        get_employee_wallet_balance: (employee_id: string) => `/wallet/employee/${employee_id}`,
         create_payment: (company_id: string) => `/payment/${company_id}`,
         validate_payment: `/payment/validate/status`,
         get_payment_history: (company_id: string) => `/payment/company/${company_id}`,
+        get_employee_payment_history: (employee_id: string) => `/payment/employee/${employee_id}`,
+        withdraw: "/wallet/payout",
     }
 }

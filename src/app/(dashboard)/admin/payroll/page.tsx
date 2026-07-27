@@ -59,9 +59,6 @@ function PayrollPage() {
     pagination.pageIndex + 1,
     pagination.pageSize
   )
-
-  console.log(payrollData)
-
   const payrolls = (payrollData ?? []) as PayrollItem[];
 
   const yearOptions: FilterOption[] = [

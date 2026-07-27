@@ -24,25 +24,28 @@ httpClient.interceptors.request.use(
 httpClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    const data = error.response?.data as any;
+
+    const isForbidden = status === 403 || data?.statusCode === 403 || data?.message === "Forbidden resource";
+
+    if (status === 401 && !isForbidden) {
       if (typeof window !== 'undefined') {
         window.localStorage.removeItem('token');
+
+        let userType: string | null = null;
+        const stored = window.localStorage.getItem('paycore:user-type');
+        if (stored) {
+          try {
+            userType = JSON.parse(stored);
+          } catch {
+            userType = stored;
+          }
+        }
+
+        const loginPath = userType === 'EMPLOYEE' ? '/employee-login' : '/company-login';
+        window.location.href = loginPath;
       }
-    }
-
-    return Promise.reject(error);
-  },
-);
-
-httpClient.interceptors.response.use(
-  (response) => response,
-  (error: AxiosError) => {
-    console.log("Status:", error.response?.status);
-    console.log("Data:", error.response?.data);
-
-    if (error.response?.status === 401) {
-      console.log("Removing token...");
-      localStorage.removeItem("token");
     }
 
     return Promise.reject(error);

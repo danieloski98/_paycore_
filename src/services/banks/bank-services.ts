@@ -21,3 +21,13 @@ export const createBankDetails = (
     URLS.bank.create_bank,
     payload
   );
+
+
+export const getEmployeeBanks = () =>
+  httpClient.get(URLS.bank.get_employee_banks);
+
+export const setPrimaryBank = (bankId: string) =>
+  httpClient.put(URLS.bank.primary_bank(bankId));
+
+export const deleteBank = (bankId: string) =>
+  httpClient.delete(URLS.bank.delete_bank(bankId));

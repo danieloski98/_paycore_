@@ -18,6 +18,8 @@ export type ModalType =
   | "add-bank"
   | "leave-request"
   | "update-employee"
+  | "withdraw-balance"
+  | "employee-payslip-details"
   | null;
 
 export interface ModalState<T = unknown> {

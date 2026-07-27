@@ -75,7 +75,7 @@ export const leaveColumns: ColumnDef<LeaveRequest>[] = [
     },
 
     {
-        accessorKey: "Status",
+        accessorKey: "status",
 
         header: "Status",
 

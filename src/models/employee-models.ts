@@ -1,3 +1,4 @@
+import { Bank } from "./bank-model";
 import { Company } from "./company";
 
 export type EmployeeType = {
@@ -45,6 +46,7 @@ export interface Employee {
   picture?: string;
   department: string;
   salary: number;
+  bankAccount?: Bank[];
   startDate: string;
   updatedAt?: string;
   createdAt?: string;

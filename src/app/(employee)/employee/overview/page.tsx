@@ -1,22 +1,67 @@
-'use client'
+"use client";
 
-import { Calendar } from 'lucide-react'
+import React, { useEffect, useState } from 'react'
+import { Calendar, ChevronLeftIcon, ChevronRightIcon, WalletIcon, Landmark, Trash2, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { DataTable } from '@/components/data-table/data-table'
-import { payslipColumns } from '@/components/data-table/columns/payslip-colums'
-// import { payslipData } from '@/components/data-table/sample-data/payslip-data'
 import { useGetEmployeeById } from '@/hooks/use-employees'
 import { useAtom } from 'jotai'
 import { employeeAtom } from '@/states/auth-user-state'
 import { useModal } from '@/hooks/use-modal'
-import { payslipData } from '@/components/data-table/sample-data/payslip-data'
+import { columns } from '../wallet/transaction-columns'
+import { useGetEmployeePaymentHistory } from '@/hooks/use-wallet'
+import { Spinner } from '@/components/ui/spinner'
+import { EmptyView } from '@/components/customs/empty-view'
+import { useEmployeeBanks, useSetPrimaryBank, useDeleteBank } from '@/hooks/use-bank'
+import { Badge } from '@/components/ui/badge'
+import { toast } from 'sonner'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export default function OverviewPage() {
   const [user] = useAtom(employeeAtom)
   const { openModal } = useModal()
   const { employee } = useGetEmployeeById(user?.id!)
+  const [page, setPage] = useState(1);
+  const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError } = useGetEmployeePaymentHistory(user?.id, page, 10)
+
+  const transactionMeta = transactionsData?.data?.data;
+  const limit = transactionMeta?.limit || 10;
+  const total = transactionMeta?.total || 0;
+  const totalPages = transactionMeta?.totalPages || 0;
+  const currentPage = transactionMeta?.page || page;
+
+  const startIndex = total > 0 ? (currentPage - 1) * limit + 1 : 0;
+  const endIndex = Math.min(currentPage * limit, total);
+
+  const { banks, isLoading: banksLoading } = useEmployeeBanks();
+  const { mutate: setPrimary, isPending: settingPrimary } = useSetPrimaryBank();
+  const { mutate: deleteBankMutation, isPending: deletingBank } = useDeleteBank();
+
+  const primaryBank = banks?.find((b: any) => b.isPrimary) ?? banks?.[0];
+
+  const handleSetPrimary = (bankId: string) => {
+    setPrimary(bankId, {
+      onSuccess: () => {
+        toast.success("Primary bank updated successfully");
+      },
+      onError: (err: any) => {
+        toast.error(err?.response?.data?.message || "Failed to update primary bank");
+      }
+    });
+  };
+
+  const handleDeleteBank = (bankId: string) => {
+    deleteBankMutation(bankId, {
+      onSuccess: () => {
+        toast.success("Bank account deleted successfully");
+      },
+      onError: (err: any) => {
+        toast.error(err?.response?.data?.message || "Failed to delete bank account");
+      }
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -24,9 +69,9 @@ export default function OverviewPage() {
       <div className="p-6">
         {/* Welcome Banner */}
         <div className="mb-6 rounded-lg bg-foreground text-background px-8 py-16">
-          <h2 className="text-3xl font-bold mb-2">Welcome back, {employee?.lastName} {employee?.firstName}</h2>
+          <h2 className="text-3xl font-bold mb-2">Welcome back, {employee?.firstName} {employee?.lastName}</h2>
           <p className="text-sm text-background/80">
-            Your payroll for October 2024 is currently being processed by HR. You&apos;ll receive a notification once it&apos;s disbursed.
+            Here is a summary of your wallet balance, recent payment history, and linked bank accounts.
           </p>
         </div>
 
@@ -67,81 +112,108 @@ export default function OverviewPage() {
 
         {/* Bank Account & Payment History */}
         <div className="grid gap-6 md:grid-cols-3 mb-6">
-          <Card className="md:col-span-2">
+          <Card className="md:col-span-2 h-fit">
             <CardContent className='px-0'>
-              {/* <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs">Payment ID</TableHead>
-                    <TableHead className="text-xs">Date</TableHead>
-                    <TableHead className="text-xs">Description</TableHead>
-                    <TableHead className="text-xs text-right">Amount</TableHead>
-                    <TableHead className="text-xs">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paymentHistory.map((payment) => (
-                    <TableRow key={payment.id}>
-                      <TableCell className="text-sm">{payment.id}</TableCell>
-                      <TableCell className="text-sm">{payment.date}</TableCell>
-                      <TableCell className="text-sm">{payment.description}</TableCell>
-                      <TableCell className="text-sm text-right font-medium">{payment.amount}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200 capitalize">
-                          {payment.status}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table> */}
               <CardHeader className='text-xl font-semibold mb-4'>Recent payment history</CardHeader>
-              <DataTable
-                columns={payslipColumns}
-                data={payslipData}
-                searchColumn={[
-
-                ]}
-                searchPlaceholder=""
-                filters={[
-                  {
-                    label: "Status",
-                    column: "status",
-                    options: [
-                      { label: "Successful", value: "SUCCESSFULL" },
-                      { label: "Pending", value: "PENDING" },
-                      { label: "Processing", value: "PROCESSING" },
-                      { label: "Failed", value: "FAILED" },
-                    ],
-                  },
-                ]}
-              />
+              {transactionsLoading && <Spinner />}
+              {!transactionsLoading && !transactionsError && transactionsData?.data?.data?.data?.length < 1 && (
+                <EmptyView
+                  title='No Transactions Found'
+                  description='Once you start managing payroll, you’ll see transaction history here.'
+                  icon={<WalletIcon />}
+                />
+              )}
+              {!transactionsLoading && !transactionsError && transactionsData?.data?.data?.data?.length > 0 && (
+                <DataTable columns={columns} data={transactionsData?.data?.data?.data} />
+              )}
             </CardContent>
           </Card>
 
-          <Card className='h-fit'>
-            <CardHeader>
-              <CardTitle className="text-base">Bank Account</CardTitle>
+          <Card className="h-fit flex flex-col">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 shrink-0">
+              <CardTitle className="text-base font-semibold">Bank Accounts</CardTitle>
+              {banks && banks.length > 0 && (
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => openModal("add-bank")}>
+                  <Plus className="h-4 w-4" />
+                </Button>
+              )}
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="h-12 w-12 rounded bg-muted flex items-center justify-center">
-                  <span className="text-sm font-bold">AB</span>
+            <CardContent className="flex-1 flex flex-col gap-4 min-h-0 pt-4 overflow-hidden">
+              {banksLoading ? (
+                <div className="flex-1 flex items-center justify-center">
+                  <Spinner />
                 </div>
-                <div>
-                  <p className="font-medium">Access Bank PLC</p>
-                  <p className="text-sm text-muted-foreground">Savings Account</p>
+              ) : !banks || banks.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center py-6">
+                  <Landmark className="h-10 w-10 text-muted-foreground/60 mb-2" />
+                  <p className="text-sm font-medium text-muted-foreground">No bank account connected</p>
+                  <Button variant="outline" size="sm" className="mt-4 w-full" onClick={() => openModal("add-bank")}>
+                    Add Bank Account
+                  </Button>
                 </div>
-              </div>
-              <div className="bg-muted rounded p-3">
-                <p className="text-xs text-muted-foreground font-medium mb-1">ACCOUNT NUMBER</p>
-                <p className="font-mono text-sm">012 •••• 992</p>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-green-600 font-medium">
-                <div className="h-2 w-2 rounded-full bg-green-600"></div>
-                Verified for Payroll
-              </div>
-              <Button variant="outline" size="sm" className="w-full" onClick={() => openModal("add-bank")}>Edit</Button>
+              ) : (
+                <div className="flex-1 flex flex-col gap-4 min-h-0">
+                  {/* Primary Bank Highlight */}
+                  {primaryBank && (
+                    <div className="rounded-xl border p-4 bg-muted/20 shrink-0">
+                      <div className="flex items-start gap-3">
+                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0">
+                          {primaryBank.bankName?.slice(0, 2).toUpperCase() || "BK"}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-semibold text-sm truncate max-w-32.5">{primaryBank.bankName}</p>
+                            <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-0 px-2 py-0 text-[10px] uppercase font-semibold">
+                              Primary
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-0.5 truncate">{primaryBank.accountName}</p>
+                          <p className="font-mono text-sm mt-1.5 tracking-wider">{primaryBank.accountNumber}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Scrollable list of connected banks */}
+                  <div className="flex-1 flex flex-col min-h-0">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 shrink-0">Connected Accounts</p>
+                    <div className="flex-1 overflow-y-auto pr-1 space-y-2">
+                      {banks.map((bank: any) => (
+                        <div key={bank.id} className="flex items-center justify-between p-2.5 rounded-lg border text-sm bg-background">
+                          <div className="flex flex-col min-w-0 pr-2">
+                            <span className="font-semibold text-xs truncate max-w-27.5">{bank.bankName}</span>
+                            <span className="text-[11px] text-muted-foreground truncate">{bank.accountName} • ****{String(bank.accountNumber).slice(-4)}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {!bank.isPrimary ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-[11px] text-primary h-7 px-2 hover:bg-primary/5"
+                                disabled={settingPrimary}
+                                onClick={() => handleSetPrimary(bank.id)}
+                              >
+                                Mark Primary
+                              </Button>
+                            ) : (
+                              <span className="text-[10px] text-green-600 font-medium px-2">Primary</span>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              disabled={deletingBank}
+                              onClick={() => handleDeleteBank(bank.id)}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 

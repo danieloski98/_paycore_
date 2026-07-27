@@ -57,7 +57,6 @@ export default function AddEmployeeForm() {
     departments,
     isLoading,
   } = useGetDepartments();
-  console.log(departments)
 
   const onSubmit: SubmitHandler<AddEmployeeFormValues> = (
     values
