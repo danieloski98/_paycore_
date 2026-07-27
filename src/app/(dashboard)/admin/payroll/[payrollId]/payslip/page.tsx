@@ -17,8 +17,6 @@ export default function PayslipPage() {
   const { payslip, isLoading } = useGetPayslipByPayrollId(params.payrollId)
   const payslipData = payslip ?? []
 
-  const styles = getPayslipStatusStyle(payslip?.[0]?.status ?? "");
-
 
   if (!payslipData) return
 
@@ -38,7 +36,7 @@ export default function PayslipPage() {
             columns={payslipColumns}
             data={payslipData}
             isLoading={isLoading}
-            searchColumn={["Employee", "netSalary"]}
+            // searchColumn={["Employee", "netSalary"]}
           />
         </Card>
       </div>

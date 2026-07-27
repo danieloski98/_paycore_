@@ -284,3 +284,10 @@ export type EmployeeLoginFormValues = z.infer<typeof employeeLoginSchema>
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>
 export type CompanyUserSetupFormValues = z.infer<typeof companyUserSetupSchema>
 export type VerifyOTPFormValues = z.infer<typeof verifyOTPSchema>
+
+export const withdrawBalanceSchema = z.object({
+  amount: z.coerce.number().positive("Amount must be greater than 0"),
+  bankDetailsId: z.string().min(1, "Please select a bank account"),
+});
+
+export type WithdrawBalanceValues = z.infer<typeof withdrawBalanceSchema>;

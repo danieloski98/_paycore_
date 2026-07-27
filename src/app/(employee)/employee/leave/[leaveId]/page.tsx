@@ -30,7 +30,6 @@ const EmployeeLeaveStatus = () => {
     const router = useRouter();
 
     const { leave, isLoading } = useGetLeaveById(params?.leaveId)
-    console.log(leave?.data.Employee)
     return (
         <div className="py-8 px-4 h-[calc(100vh-80px)]">
             {isLoading && (

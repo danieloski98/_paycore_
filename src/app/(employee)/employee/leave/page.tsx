@@ -40,7 +40,7 @@ export default function LeavePage() {
       {/* Header */}
       <div className="bg-card mt-4">
         <div className="flex flex-col items-start gap-2 md:gap-0 md:flex-row md:items-center justify-between px-6 py-4">
-          <p className="text-sm text-muted-foreground mt-1">Track and manage employee leave balances and upcoming requests in one place.</p>
+          <p className="text-sm text-muted-foreground mt-1">Track and manage your leave balances and upcoming requests in one place.</p>
           <div className="flex items-center gap-3">
             <Button className="bg-foreground text-background hover:bg-foreground/90" onClick={() => openModal("leave-request")}>
               <Plus className="h-4 w-4 mr-1" />

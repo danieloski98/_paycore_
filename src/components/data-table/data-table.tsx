@@ -56,6 +56,17 @@ interface DataTableProps<TData> {
   onSearchChange?: (search: string) => void;
 }
 
+const matchValue = (val: any, term: string): boolean => {
+  if (val === null || val === undefined) return false;
+  if (typeof val === "object") {
+    if (Array.isArray(val)) {
+      return val.some((item) => matchValue(item, term));
+    }
+    return Object.values(val).some((item) => matchValue(item, term));
+  }
+  return String(val).toLowerCase().includes(term);
+};
+
 export function DataTable<TData>({
   columns,
   data,
@@ -95,9 +106,7 @@ export function DataTable<TData>({
     const term = search.toLowerCase();
 
     return data.filter((item) =>
-      columns.some((col) =>
-        String(item[col] ?? "").toLowerCase().includes(term)
-      )
+      columns.some((col) => matchValue(item[col], term))
     );
   }, [data, searchColumn, search, manualPagination]);
 
@@ -137,18 +146,21 @@ export function DataTable<TData>({
           )}
           {yearFilter && (
             <YearFilter
-              column={table?.getColumn(yearFilter.column as string)}
-              startYear={yearFilter.startYear}
+              column={table.getAllColumns().some(col => col.id === yearFilter.column) ? table.getColumn(yearFilter.column as string) : undefined}
+              startYear={yearFilter?.startYear}
             />
           )}
-          {filters?.map((filter) => (
-            <DataTableFilter
-              key={String(filter.column)}
-              label={filter.label}
-              options={filter.options}
-              column={table.getColumn(filter.column as string)}
-            />
-          ))}
+          {filters?.map((filter) => {
+            const hasColumn = table.getAllColumns().some(col => col.id === filter.column);
+            return (
+              <DataTableFilter
+                key={String(filter?.column)}
+                label={filter?.label}
+                options={filter?.options}
+                column={hasColumn ? table.getColumn(filter?.column! as string) : undefined}
+              />
+            );
+          })}
         </div>
         {action}
       </div>
@@ -159,8 +171,8 @@ export function DataTable<TData>({
           <TableHeader className="bg-muted/50">
             {table?.getHeaderGroups()?.map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup?.headers.map((header) => (
-                  <TableHead key={header.id} className="pl-10">
+                {headerGroup?.headers?.map((header) => (
+                  <TableHead key={header?.id} className="pl-10">
                     {flexRender(header?.column.columnDef.header, header?.getContext())}
                   </TableHead>
                 ))}
@@ -168,7 +180,7 @@ export function DataTable<TData>({
             ))}
           </TableHeader>
           {isLoading ? (
-            <TableLoading columns={columns.length} rows={pagination.pageSize} />
+            <TableLoading columns={columns?.length} rows={pagination?.pageSize} />
           ) : (
             <TableBody>
               {table.getRowModel().rows.length ? (
@@ -184,7 +196,7 @@ export function DataTable<TData>({
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id} className="pl-6">
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          {flexRender(cell?.column.columnDef.cell, cell?.getContext())}
                         </TableCell>
                       ))}
                     </TableRow>
@@ -192,7 +204,7 @@ export function DataTable<TData>({
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center h-24">
+                  <TableCell colSpan={columns?.length} className="text-center h-24">
                     No results found.
                   </TableCell>
                 </TableRow>
@@ -222,7 +234,7 @@ interface TableLoadingProps {
 
 export function TableLoading({
   columns,
-  rows = 8,
+  rows = 6,
 }: TableLoadingProps) {
   return (
     <TableBody>

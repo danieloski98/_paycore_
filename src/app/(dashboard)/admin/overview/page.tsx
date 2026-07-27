@@ -149,7 +149,6 @@ function OverviewPage() {
                 {stat.title}
               </CardDescription>
               {stat.hint && (
-
                 <CardAction>
                   <Badge variant={stat.tone}>{stat.hint}</Badge>
                 </CardAction>

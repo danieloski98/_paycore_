@@ -51,7 +51,6 @@ function EmployeesPage() {
   // API is 1-indexed, TanStack is 0-indexed — adjust the args below to
   // whatever shape useGetEmployees actually expects.
   const { employees, isLoading } = useGetEmployees();
-  console.log(employees)
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">

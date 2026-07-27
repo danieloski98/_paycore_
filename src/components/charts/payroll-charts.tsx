@@ -120,9 +120,9 @@ export function PayrollTrendChart({ payrolls }: PayrollTrendChartProps) {
                                     {[...new Set(payrolls.map((p) => p.year))]
                                         .sort()
                                         .reverse()
-                                        .map((year) => (
+                                        .map((year, idx) => (
                                             <SelectItem
-                                                key={year}
+                                                key={`${year}-${idx}`}
                                                 value={String(year)}
                                             >
                                                 {year}

@@ -29,9 +29,9 @@ export default function EmployeeDetailsStep() {
 
       return (
         fullName.includes(query) ||
-        employee.email.toLowerCase().includes(query) ||
-        employee.position.toLowerCase().includes(query) ||
-        employee.department.toLowerCase().includes(query)
+        (employee.email || "").toLowerCase().includes(query) ||
+        (employee.position || "").toLowerCase().includes(query) ||
+        (employee.department || "").toLowerCase().includes(query)
       );
     });
   }, [employees, search]);

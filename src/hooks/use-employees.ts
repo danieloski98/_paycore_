@@ -131,7 +131,7 @@ async function get_all_employees(limit = 100) {
 }
 
 export const useGetEmployees = () => {
-    const query = useQuery<EmployeeType[]>({
+    const query = useQuery<Employee[]>({
         queryKey: ["employees", "all"],
         queryFn: () => get_all_employees(),
         staleTime: 5 * 60 * 1000,
@@ -192,6 +192,7 @@ export const useSetupEmployeePassword = (
 
 export const useUpdateEmployeePicture = () => {
     const queryClient = useQueryClient();
+    const [_, setUser] = useAtom(employeeAtom)
 
     return useMutation({
         mutationFn: async ({
@@ -207,7 +208,7 @@ export const useUpdateEmployeePicture = () => {
             // depends on your upload response
             const imageUrl = upload.data;
             console.log(imageUrl)
-
+            setUser((prev) => prev ? { ...prev, picture: imageUrl } : prev );
             // update employee
             return update_employee({
                 id,

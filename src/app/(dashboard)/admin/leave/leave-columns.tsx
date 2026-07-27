@@ -79,7 +79,7 @@ export const leaveColumns: ColumnDef<LeaveRequest>[] = [
         ),
     },
     {
-        accessorKey: "Status",
+        accessorKey: "status",
         header: "Status",
 
         filterFn: (row, columnId, value) => {

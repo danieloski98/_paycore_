@@ -101,7 +101,7 @@ function LeavePage() {
                 data={leaves}
                 isLoading={isLoading}
                 searchColumn={[
-                  "Status", "type", "totalDays"
+                  "Status", "type", "totalDays", "Employee"
                 ]}
                 searchPlaceholder="Search leaves..."
                 filters={[
