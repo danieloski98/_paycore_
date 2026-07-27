@@ -1,9 +1,13 @@
 import { AddEmployeePayload } from "@/lib/employee/payload";
+import { EmployeeSetupFormValues } from "@/lib/schemas";
 import { GeneralResponse } from "@/lib/types";
-import { EmployeeType } from "@/models/employee-models";
-import { add_employee, delete_employee, edit_employee, get_employee_by_id, get_employees, upload_employees } from "@/services/employees/employee-services";
+import { Employee, EmployeeType } from "@/models/employee-models";
+import { add_employee, delete_employee, edit_employee, get_employee_by_company, get_employee_by_id, get_employees, setup_employee_password, update_employee, upload_employees } from "@/services/employees/employee-services";
+import { upload_image } from "@/services/upload/upload-service";
+import { employeeAtom } from "@/states/auth-user-state";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
+import { useAtom } from "jotai";
 
 export interface PaginatedResponse<T> {
     data: T[];
@@ -127,13 +131,30 @@ async function get_all_employees(limit = 100) {
 }
 
 export const useGetEmployees = () => {
-    const query = useQuery<EmployeeType[]>({
+    const query = useQuery<Employee[]>({
         queryKey: ["employees", "all"],
         queryFn: () => get_all_employees(),
         staleTime: 5 * 60 * 1000,
     });
 
     return { ...query, employees: query.data ?? [] };
+};
+
+
+export const useGetCompanyEmployeeById = (id: string) => {
+    const query = useQuery<
+        AxiosResponse<GeneralResponse<Employee>>
+    >({
+        queryKey: ["company", id],
+        queryFn: () => get_employee_by_company(id),
+        enabled: !!id,
+        staleTime: 5 * 60 * 1000,
+    });
+
+    return {
+        ...query,
+        employee: query.data?.data.data,
+    };
 };
 
 
@@ -151,4 +172,58 @@ export const useGetEmployeeById = (id: string) => {
         ...query,
         employee: query.data?.data.data,
     };
+};
+
+export const useSetupEmployeePassword = (
+    employeeId: string
+) => {
+    return useMutation({
+        mutationKey: ["employee-password", employeeId],
+
+        mutationFn: (
+            payload: EmployeeSetupFormValues
+        ) =>
+            setup_employee_password({
+                employeeId,
+                payload,
+            }),
+    });
+};
+
+export const useUpdateEmployeePicture = () => {
+    const queryClient = useQueryClient();
+    const [_, setUser] = useAtom(employeeAtom)
+
+    return useMutation({
+        mutationFn: async ({
+            id,
+            file,
+        }: {
+            id: string;
+            file: File;
+        }) => {
+            // upload first
+            const upload = await upload_image(file);
+
+            // depends on your upload response
+            const imageUrl = upload.data;
+            console.log(imageUrl)
+            setUser((prev) => prev ? { ...prev, picture: imageUrl } : prev );
+            // update employee
+            return update_employee({
+                id,
+                payload: { picture: imageUrl }
+            });
+        },
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["employee"],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["employees"],
+            });
+        },
+    });
 };

@@ -48,19 +48,21 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function PayrollTrendChart({ payrolls }: PayrollTrendChartProps) {
-    const currentYear = new Date().getFullYear().toString();
+    const currentYear = new Date().getFullYear();
 
-    const [selectedYear, setSelectedYear] = useState(currentYear);
+    const [selectedYear, setSelectedYear] = useState<number>(currentYear);
 
     const [filter, setFilter] = useState<"monthly" | "yearly">("monthly");
 
     const monthlyData = useMemo(() => {
+        if (selectedYear == null) return [];
+
         return MONTHS.map((month, index) => ({
             month,
             amount: payrolls.filter(
-                (item) =>
-                    item.month === index &&
-                    item.year === selectedYear
+                p =>
+                    p.year === selectedYear &&
+                    p.month === index
             ).length,
         }));
     }, [payrolls, selectedYear]);
@@ -107,8 +109,8 @@ export function PayrollTrendChart({ payrolls }: PayrollTrendChartProps) {
                     <div className="flex items-center gap-3">
                         {filter === "monthly" && (
                             <Select
-                                value={selectedYear}
-                                onValueChange={setSelectedYear}
+                                value={String(selectedYear)}
+                                onValueChange={(value) => setSelectedYear(Number(value))}
                             >
                                 <SelectTrigger className="w-28">
                                     <SelectValue />
@@ -118,10 +120,10 @@ export function PayrollTrendChart({ payrolls }: PayrollTrendChartProps) {
                                     {[...new Set(payrolls.map((p) => p.year))]
                                         .sort()
                                         .reverse()
-                                        .map((year) => (
+                                        .map((year, idx) => (
                                             <SelectItem
-                                                key={year}
-                                                value={year}
+                                                key={`${year}-${idx}`}
+                                                value={String(year)}
                                             >
                                                 {year}
                                             </SelectItem>
@@ -169,8 +171,8 @@ export function PayrollTrendChart({ payrolls }: PayrollTrendChartProps) {
                                 content={
                                     <ChartTooltipContent
                                         formatter={(value) => [
-                                            `${value} Payroll ${Number(value) === 1 ? "" : "s"}`,
-                                            "Created",
+                                            `${value} Payroll${Number(value) === 1 ? "" : "s"}`,
+                                            " Created",
                                         ]}
                                     />
                                 }

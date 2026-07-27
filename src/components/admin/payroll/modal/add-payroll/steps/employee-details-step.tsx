@@ -11,7 +11,6 @@ import { useMemo, useState } from "react";
 
 
 export default function EmployeeDetailsStep() {
-  const [user] = useAtom(authUserAtom)
   const payroll = useAtomValue(payrollAtom);
   const updatePayroll = useSetAtom(updatePayrollAtom);
   const [search, setSearch] = useState("");
@@ -30,9 +29,9 @@ export default function EmployeeDetailsStep() {
 
       return (
         fullName.includes(query) ||
-        employee.email.toLowerCase().includes(query) ||
-        employee.position.toLowerCase().includes(query) ||
-        employee.department.toLowerCase().includes(query)
+        (employee.email || "").toLowerCase().includes(query) ||
+        (employee.position || "").toLowerCase().includes(query) ||
+        (employee.department || "").toLowerCase().includes(query)
       );
     });
   }, [employees, search]);

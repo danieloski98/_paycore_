@@ -1,17 +1,12 @@
-import React from "react"
+"use client"
+
 import {
   CalendarDaysIcon,
-  CheckCircle2Icon,
-  DownloadIcon,
   Grid2x2Icon,
-  PlusIcon,
-  SearchIcon,
   ShieldAlertIcon,
-  XCircleIcon,
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -20,8 +15,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { DataTable } from "@/components/data-table/data-table"
-import { leaveRequests } from "@/models/leave-model"
 import { leaveColumns } from "./leave-columns"
+import { useGetCompanyLeaves } from "@/hooks/use-leave"
 
 const stats = [
   {
@@ -47,9 +42,12 @@ const stats = [
   },
 ]
 
-const legend = ["Annual Leave", "Sick Leave", "Maternity / Paternity"]
 
 function LeavePage() {
+
+  const { leaves, isLoading } = useGetCompanyLeaves()
+  
+
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">
       <section className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
@@ -58,13 +56,6 @@ function LeavePage() {
           <p className="text-sm text-muted-foreground">
             Oversee employee absences, approvals, and policy compliance.
           </p>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline">
-            <DownloadIcon data-icon="inline-start" />
-            Export Report
-          </Button>
         </div>
       </section>
 
@@ -107,12 +98,12 @@ function LeavePage() {
             <CardContent className="px-0">
               <DataTable
                 columns={leaveColumns}
-                data={leaveRequests}
-                // isLoading={isLoading}
+                data={leaves}
+                isLoading={isLoading}
                 searchColumn={[
-                  "Status", "type", "totalDays"
+                  "Status", "type", "totalDays", "Employee"
                 ]}
-                searchPlaceholder="Search employees..."
+                searchPlaceholder="Search leaves..."
                 filters={[
                   {
                     label: "Leave Type",

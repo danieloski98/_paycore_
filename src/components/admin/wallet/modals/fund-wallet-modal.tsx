@@ -14,6 +14,7 @@ import { useCreatePayment, useValidatePayment } from '@/hooks/use-wallet'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
 import { Spinner } from '@/components/ui/spinner'
+import { AppDialog } from '@/components/shared/app-dialog'
 
 
 function FundWalletModal() {
@@ -69,44 +70,37 @@ function FundWalletModal() {
         }
     }
     return (
-        <Dialog
+        <AppDialog
             open={isOpen('fund-wallet')}
             onOpenChange={(open) => {
                 if (!open) closeModal();
             }}
+            title="Fund Wallet"
+            description="Fund your wallet to start using our services"
         >
-            <DialogHeader>
-                <DialogTitle>Fund Wallet</DialogTitle>
-                <DialogDescription>
-                    Fund your wallet to start using our services
-                </DialogDescription>
-            </DialogHeader>
-            <DialogContent>
-
-                <div className="flex flex-col gap-4">
-                    <div className="flex flex-col gap-2">
-                        <Label htmlFor="amount">Amount</Label>
-                        <Input
-                            id="amount"
-                            type="text"
-                            inputMode="decimal"
-                            placeholder="Enter amount"
-                            className='h-12 mt-5'
-                            value={amount}
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                if (val === '' || /^\d*\.?\d*$/.test(val)) {
-                                    setAmount(val);
-                                }
-                            }}
-                        />
-                    </div>
-                    <Button className='h-10' onClick={handlePaymentCreation} disabled={isPending || isPendingValidatePayment}>
-                        {isPending || isPendingValidatePayment ? <Spinner /> : 'Pay'}
-                    </Button>
+            <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-2">
+                    <Label htmlFor="amount">Amount</Label>
+                    <Input
+                        id="amount"
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="Enter amount"
+                        className='h-12 mt-5'
+                        value={amount}
+                        onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                                setAmount(val);
+                            }
+                        }}
+                    />
                 </div>
-            </DialogContent>
-        </Dialog>
+                <Button className='h-10' onClick={handlePaymentCreation} disabled={isPending || isPendingValidatePayment}>
+                    {isPending || isPendingValidatePayment ? <Spinner /> : 'Pay'}
+                </Button>
+            </div>
+        </AppDialog>
     )
 }
 

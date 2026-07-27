@@ -1,7 +1,7 @@
 "use client";
 
 import { useModal } from "@/hooks/use-modal";
-import { formatMonthYear } from "@/lib/utils";
+import { cn, formatMonthYear, getPayrollStatusStyle } from "@/lib/utils";
 
 import {
     Sheet,
@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 
 export default function PayrollDetailsSheet() {
     const { isOpen, closeModal, data } = useModal();
+
+    const styles = getPayrollStatusStyle(data?.status!);
 
     if (!data) return null;
 
@@ -44,7 +46,7 @@ export default function PayrollDetailsSheet() {
                             </p>
 
                             <p className="font-medium">
-                                {data.name}
+                                {data?.name!}
                             </p>
                         </div>
 
@@ -54,14 +56,9 @@ export default function PayrollDetailsSheet() {
                             </p>
 
                             <span
-                                className={`rounded-md px-4 py-1 text-xs font-medium ${data.status === "SUCCESSFULL"
-                                        ? "bg-green-100 text-green-700"
-                                        : data.status === "PROCESSING"
-                                            ? "bg-blue-100 text-blue-700"
-                                            : "bg-yellow-100 text-yellow-700"
-                                    }`}
+                                className={cn(`rounded-md px-4 py-1 text-xs font-medium`, styles?.textColor!, styles?.bgColor!)}
                             >
-                                {data.status}
+                                {data?.status}
                             </span>
                         </div>
 
@@ -71,7 +68,7 @@ export default function PayrollDetailsSheet() {
                             </p>
 
                             <p className="font-medium">
-                                {formatMonthYear(data.month, data.year)}
+                                {formatMonthYear(data?.month, data?.year)}
                             </p>
                         </div>
                     </div>

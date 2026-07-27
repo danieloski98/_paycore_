@@ -13,20 +13,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal";
-import { EmployeeType } from "@/models/employee-models";
+import { Employee } from "@/models/employee-models";
 
 
-export const employeeColumns: ColumnDef<EmployeeType>[] = [
+export const employeeColumns: ColumnDef<Employee>[] = [
   {
     accessorKey: "name",
     header: "Name",
     filterFn: "equals",
     cell: ({ row }) => {
       const employee = row.original;
+
       return (
         <div className="flex items-center gap-3 ml-4">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={employee.picture} />
+            <AvatarImage src={employee?.picture ?? ""} />
             <AvatarFallback>
               {employee.firstName
                 .split(" ")
@@ -78,7 +79,12 @@ export const employeeColumns: ColumnDef<EmployeeType>[] = [
       const employee = row.original;
       return (
         <div className="flex items-center gap-3">
-          <p className="text-sm text-black">{employee.salary}</p>
+          <p className="text-sm text-black">{
+            `₦${Number(employee.salary || 0).toLocaleString(
+              "en-NG",
+              { minimumFractionDigits: 2 }
+            )}`
+          }</p>
         </div>
       );
     },

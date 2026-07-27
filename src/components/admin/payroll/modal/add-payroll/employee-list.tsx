@@ -2,10 +2,10 @@
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { EmployeeType } from "@/models/employee-models";
+import { Employee } from "@/models/employee-models";
 
 interface Props {
-    employees: EmployeeType[];
+    employees: Employee[];
 
     loading?: boolean;
 

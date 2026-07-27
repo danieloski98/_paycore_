@@ -3,18 +3,10 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useModal } from "@/hooks/use-modal";
 import { months } from "@/lib/constants";
 import { PayrollItem } from "@/models/payroll-model";
+import { PayrollActions } from "./payroll-action";
+import { cn, getPayrollStatusStyle } from "@/lib/utils";
 
 
 export const payrollColumns: ColumnDef<PayrollItem>[] = [
@@ -31,14 +23,13 @@ export const payrollColumns: ColumnDef<PayrollItem>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.original.status;
+      const status = row.original?.status;
+      const styles = getPayrollStatusStyle(status);
+
 
       return (
         <span
-          className={`inline-flex items-center ml-4 rounded-full px-3 py-1 text-xs font-medium ${status === "SUCCESSFULL"
-            ? "bg-green-100 text-green-700"
-            : "bg-yellow-100 text-yellow-700"
-            }`}
+          className={cn("inline-flex items-center ml-4 rounded-lg px-3 py-1 text-xs font-medium", styles?.bgColor!, styles?.textColor!)}
         >
           {status}
         </span>
@@ -62,7 +53,7 @@ export const payrollColumns: ColumnDef<PayrollItem>[] = [
 
       return (
         <span className="font-medium ml-4">
-          {months[data.month].label} {data.year}
+          {months[data?.month]?.label} {data?.year}
         </span>
       );
     },
@@ -71,64 +62,10 @@ export const payrollColumns: ColumnDef<PayrollItem>[] = [
     id: "actions",
     header: "Action",
     cell: ({ row }) => {
-      const data = row.original;
-      const { openModal } = useModal()
       return (
-        <div className="w-full flex items-center justify-between pr-6">
-          <Button>
-            {data.status === "PENDING" ? (
-              <>
-                <span
-                // onClick={() => handleStartProcessing(item.id)}
-                >
-                  Start Processing
-                </span>
-              </>
-            ) : data.status === "PROCESSING" ? (
-              <>
-                <span
-                >
-                  Cancel Processing
-                </span>
-              </>
-            ) : (
-              <span>
-                Payroll Done
-              </span>
-            )}
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="ml-4">
-                <MoreHorizontal className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  openModal("payroll-details", row.original)
-                }}
-              >
-                View
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onClick={() => console.log("Download Payslip", row.original)}
-              >
-                Edit
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
-                onClick={() => openModal("delete-payroll", row.original)}
-              >
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <PayrollActions payroll={row?.original} />
       )
+
     },
   },
 ];

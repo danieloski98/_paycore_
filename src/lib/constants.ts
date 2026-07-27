@@ -1,18 +1,18 @@
 import {
-    BanknoteIcon,
-    BriefcaseBusinessIcon,
-    CreditCardIcon,
-    FileBarChart2Icon,
-    FileTextIcon,
-    LayoutDashboardIcon,
-    ReceiptTextIcon,
-    SettingsIcon,
-    Users2Icon,
-    UsersIcon,
+  BanknoteIcon,
+  BriefcaseBusinessIcon,
+  CreditCardIcon,
+  FileBarChart2Icon,
+  FileTextIcon,
+  LayoutDashboardIcon,
+  ReceiptTextIcon,
+  SettingsIcon,
+  Users2Icon,
+  UsersIcon,
 } from "lucide-react"
 
 import type {
-    LucideIcon
+  LucideIcon
 } from "lucide-react"
 
 
@@ -31,10 +31,10 @@ export const CSV_ACCEPT = {
 
 
 export type SidebarItemProps = {
-    label: string;
-    href: string;
-    icon: LucideIcon;
-    badge?: string | number
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  badge?: string | number
 }
 
 export const SidebarLinks = [
@@ -53,11 +53,11 @@ export const SidebarLinks = [
     href: "/admin/payroll",
     icon: CreditCardIcon,
   },
-  {
-    label: "Payments",
-    href: "/admin/payments",
-    icon: BriefcaseBusinessIcon,
-  },
+  // {
+  //   label: "Payments",
+  //   href: "/admin/payments",
+  //   icon: BriefcaseBusinessIcon,
+  // },
   {
     label: "Wallet",
     href: "/admin/wallet",
@@ -73,11 +73,11 @@ export const SidebarLinks = [
     href: "/admin/leave",
     icon: FileTextIcon,
   },
-  {
-    label: "Teams",
-    href: "/admin/teams",
-    icon: Users2Icon,
-  },
+  // {
+  //   label: "Teams",
+  //   href: "/admin/teams",
+  //   icon: Users2Icon,
+  // },
   // {
   //   label: "Reports",
   //   href: "#",
@@ -87,6 +87,39 @@ export const SidebarLinks = [
   {
     label: "Settings",
     href: "/admin/settings",
+    icon: SettingsIcon,
+  },
+]
+
+export const employeeSidebarLinks = [
+  {
+    label: "Overview",
+    href: "/employee/overview",
+    icon: LayoutDashboardIcon,
+  },
+  // {
+  //   label: "Employees",
+  //   href: "/admin/employees",
+  //   icon: UsersIcon,
+  // },
+  {
+    label: "Salary & Payslip",
+    href: "/employee/salary-payslip",
+    icon: CreditCardIcon,
+  },
+  {
+    label: "Wallet",
+    href: "/employee/wallet",
+    icon: BanknoteIcon,
+  },
+  {
+    label: "Leave",
+    href: "/employee/leave",
+    icon: FileTextIcon,
+  },
+  {
+    label: "Settings",
+    href: "/employee/settings",
     icon: SettingsIcon,
   },
 ]

@@ -23,8 +23,15 @@ export const companyUserLoginSchema = z.object({
 });
 
 export const employeeLoginSchema = z.object({
-  email: z.string().trim().email('Enter a valid email address'),
-  password: z.string().min(8, 'Must be at least 8 characters'),
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required")
+    .email("Enter a valid email"),
+
+  password: z
+    .string()
+    .min(1, "Password is required"),
 });
 
 export const forgotPasswordSchema = z.object({
@@ -117,6 +124,41 @@ export const changePasswordSchema = z
     }
   );
 
+  
+  export const changeEmployeePasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(6, "Password must be at least 6 characters")
+      .max(50, "Password must be less than 50 characters"),
+
+    confirmPassword: z
+      .string()
+      .min(1, "Please confirm your password"),
+  })
+  .refine(
+    (data) => data.confirmPassword === data.password,
+    {
+      message: "Passwords must match",
+      path: ["confirmPassword"],
+    }
+  );
+
+export const employeeSetupSchema = z
+  .object({
+    password: z
+      .string()
+      .min(6, "Password must be at least 6 characters"),
+
+    confirmPassword: z
+      .string()
+      .min(1, "Confirm password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
 export const companySchema = z.object({
   name: z
     .string()
@@ -172,6 +214,50 @@ export const userSchema = z.object({
   isActive: z.boolean(),
 });
 
+export const bankDetailsSchema = z.object({
+  accountNumber: z
+    .string()
+    .min(10, "Account number must be 10 digits")
+    .max(10, "Account number must be 10 digits"),
+
+  bankCode: z
+    .string()
+    .min(1, "Please select a bank"),
+
+  bankName: z.string(),
+
+  accountName: z.string(),
+});
+
+export const leaveRequestSchema = z
+  .object({
+    leaveType: z.string().min(1, "Leave type is required"),
+
+    startDate: z.string().min(1),
+
+    endDate: z.string().min(1),
+
+    description: z
+      .string()
+      .min(10, "Description is too short"),
+  })
+  .refine(
+    (data) =>
+      new Date(data.endDate) >= new Date(data.startDate),
+    {
+      message: "End date must be after start date",
+      path: ["endDate"],
+    }
+  );
+
+export type LeaveRequestValues = z.infer<
+  typeof leaveRequestSchema
+>;
+
+export type BankDetailsFormValues = z.infer<
+  typeof bankDetailsSchema
+>;
+
 export type UserFormValues = z.infer<typeof userSchema>;
 
 export type CompanyFormValues = z.infer<typeof companySchema>;
@@ -180,11 +266,17 @@ export type ChangePasswordFormValues = z.infer<
   typeof changePasswordSchema
 >;
 
+export type ChangeEmployeePasswordFormValues = z.infer<
+  typeof changeEmployeePasswordSchema
+>;
+
 export type AddEmployeeFormValues = z.infer<typeof addEmployeeSchema>;
 export type UploadEmployeesFormValues = z.infer<
   typeof uploadEmployeesSchema
 >;
-
+export type EmployeeSetupFormValues = z.infer<
+  typeof employeeSetupSchema
+>;
 export type DepartmentFormValues = z.infer<typeof departmentSchema>
 export type CreateCompanyUserAccountFormValues = z.infer<typeof createCompanyUserAccountSchema>;
 export type CompanyUserLoginFormValues = z.infer<typeof companyUserLoginSchema>;
@@ -192,3 +284,10 @@ export type EmployeeLoginFormValues = z.infer<typeof employeeLoginSchema>
 export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>
 export type CompanyUserSetupFormValues = z.infer<typeof companyUserSetupSchema>
 export type VerifyOTPFormValues = z.infer<typeof verifyOTPSchema>
+
+export const withdrawBalanceSchema = z.object({
+  amount: z.coerce.number().positive("Amount must be greater than 0"),
+  bankDetailsId: z.string().min(1, "Please select a bank account"),
+});
+
+export type WithdrawBalanceValues = z.infer<typeof withdrawBalanceSchema>;

@@ -29,9 +29,15 @@ export interface VerifyOTPPayload {
 }
 
 export interface ChangePasswordPayload {
-  userId: string;
-  newPassword: string;
-  type: string;
+    userId: string;
+    newPassword: string;
+    type: string;
+}
+
+export interface ChangeemployeePasswordPayload {
+    id: string;
+    password: string;
+    confirmPassword: string;
 }
 
 export interface CompanyUserSetupPayload {

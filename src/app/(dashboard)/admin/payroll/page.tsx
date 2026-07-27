@@ -19,11 +19,12 @@ import {
 } from "@/components/ui/card"
 import { DataTable, TableFilter } from "@/components/data-table/data-table"
 import { useModal } from "@/hooks/use-modal"
-import { useGetPayrolls } from "@/hooks/use-payroll"
-import { payrollData } from "@/components/data-table/sample-data/payroll-data"
+import { useGetPayrolls, useStartPayrollProcessing } from "@/hooks/use-payroll"
 import { payrollColumns } from "@/components/data-table/columns/payroll-column"
 import { PayrollItem } from "@/models/payroll-model"
 import { useState } from "react"
+import { FilterOption } from "@/components/data-table/data-table-filter"
+import { toast } from "sonner"
 
 const summaryCards = [
   {
@@ -48,60 +49,62 @@ const summaryCards = [
   },
 ]
 
-const yearOptions = [
-  ...new Set(payrollData.map((x) => x.year)),
-]
-  .sort((a, b) => Number(b) - Number(a))
-  .map((year) => ({
-    label: year,
-    value: year,
-  }));
-
-const payrollFilters: TableFilter<PayrollItem>[] = [
-  {
-    label: "Year",
-    column: "year",
-    options: yearOptions,
-  },
-  {
-    label: "Month",
-    column: "month",
-    options: [
-      { label: "January", value: "0" },
-      { label: "February", value: "1" },
-      { label: "March", value: "2" },
-      { label: "April", value: "3" },
-      { label: "May", value: "4" },
-      { label: "June", value: "5" },
-      { label: "July", value: "6" },
-      { label: "August", value: "7" },
-      { label: "September", value: "8" },
-      { label: "October", value: "9" },
-      { label: "November", value: "10" },
-      { label: "December", value: "11" },
-    ],
-  },
-  {
-    label: "Status",
-    column: "status",
-    options: [
-      { label: "PENDING", value: "PENDING" },
-      { label: "PROCESSING", value: "PROCESSING" },
-      { label: "SUCCESSFULL", value: "SUCCESSFULL" },
-    ],
-  },
-];
-
 function PayrollPage() {
   const { openModal } = useModal()
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
   });
-  const { data, isLoading, pagination: pageInfo } = useGetPayrolls(
+  const { data: payrollData = [], isLoading } = useGetPayrolls(
     pagination.pageIndex + 1,
     pagination.pageSize
   )
+  const payrolls = (payrollData ?? []) as PayrollItem[];
+
+  const yearOptions: FilterOption[] = [
+    ...new Set(payrolls.map((x) => x.year)),
+  ]
+    // @ts-ignore
+    .sort((a, b) => b - a)
+    .map((year) => ({
+      label: year?.toString(),
+      value: year?.toString(),
+    }));
+
+  const payrollFilters: TableFilter<PayrollItem>[] = [
+    {
+      label: "Year",
+      column: "year",
+      options: yearOptions,
+    },
+    {
+      label: "Month",
+      column: "month",
+      options: [
+        { label: "January", value: "0" },
+        { label: "February", value: "1" },
+        { label: "March", value: "2" },
+        { label: "April", value: "3" },
+        { label: "May", value: "4" },
+        { label: "June", value: "5" },
+        { label: "July", value: "6" },
+        { label: "August", value: "7" },
+        { label: "September", value: "8" },
+        { label: "October", value: "9" },
+        { label: "November", value: "10" },
+        { label: "December", value: "11" },
+      ],
+    },
+    {
+      label: "Status",
+      column: "status",
+      options: [
+        { label: "PENDING", value: "PENDING" },
+        { label: "PROCESSING", value: "PROCESSING" },
+        { label: "SUCCESSFULL", value: "SUCCESSFULL" },
+      ],
+    },
+  ];
 
   return (
     <div className="flex flex-1 flex-col">

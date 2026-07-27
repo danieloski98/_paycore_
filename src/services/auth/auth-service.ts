@@ -1,6 +1,7 @@
-import { ChangePasswordPayload, CompanyUserLoginPayload, CompanyUserSetupPayload, CreateCompanyUserAccountPayload, EmployeeLoginPayload, ForgotPasswordPayload, VerifyOTPPayload } from "@/lib/auth/payload";
+import { ChangeemployeePasswordPayload, ChangePasswordPayload, CompanyUserLoginPayload, CompanyUserSetupPayload, CreateCompanyUserAccountPayload, EmployeeLoginPayload, ForgotPasswordPayload, VerifyOTPPayload } from "@/lib/auth/payload";
 import httpClient from "../api-service";
 import { URLS } from "@/lib/urls";
+import { EmployeeLoginFormValues } from "@/lib/schemas";
 
 export function create_company_account(payload: CreateCompanyUserAccountPayload) {
     return httpClient.post(URLS.auth.create_company_user_account, payload);
@@ -10,9 +11,9 @@ export function company_user_login(payload: CompanyUserLoginPayload) {
     return httpClient.post(URLS.auth.company_user_login, payload);
 }
 
-export function employee_login(payload: EmployeeLoginPayload) {
-    return httpClient.post(URLS.auth.employee_login, payload);
-}
+// export function employee_login(payload: EmployeeLoginPayload) {
+//     return httpClient.post(URLS.auth.employee_login, payload);
+// }
 
 
 export function company_user_setup(userId: string, payload: CompanyUserSetupPayload) {
@@ -25,4 +26,17 @@ export function forgot_passord(payload: ForgotPasswordPayload) {
 
 export function change_passord(payload: ChangePasswordPayload) {
     return httpClient.post(URLS.auth.change_password, payload);
+}
+
+export const employee_login = (
+    payload: EmployeeLoginFormValues
+) => {
+    return httpClient.post(
+        URLS.auth.employee_login,
+        payload
+    );
+};
+
+export function change_employee_passord(id: string, payload: ChangeemployeePasswordPayload) {
+    return httpClient.post(URLS.auth.change_employee_password(id), payload);
 }

@@ -34,8 +34,6 @@ function WalletPage() {
   const [page, setPage] = useState(1);
   const { data, isLoading, isError } = useGetBalance(user?.companyId as string);
   const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError } = useGetPaymentHistory(user?.companyId as string, page, 10)
-  console.log('[TRANSACTION DATA]', transactionsData?.data?.data);
-
   const transactionMeta = transactionsData?.data?.data;
   const limit = transactionMeta?.limit || 10;
   const total = transactionMeta?.total || 0;

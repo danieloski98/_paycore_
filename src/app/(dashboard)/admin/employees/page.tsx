@@ -63,10 +63,10 @@ function EmployeesPage() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline">
+          {/* <Button variant="outline">
             <DownloadIcon data-icon="inline-start" />
             Export Directory
-          </Button>
+          </Button> */}
           <Button onClick={() => openModal("new-employee")}>
             <PlusIcon data-icon="inline-start" />
             Add Employee
@@ -96,10 +96,10 @@ function EmployeesPage() {
       <section className="grid gap-4">
         <Card className="shadow-sm">
           <CardHeader>
-            <CardTitle>Employee Directory</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-xl font-semibold">Employees</CardTitle>
+            {/* <CardDescription>
               Search and open employee profiles to manage payroll and leave data.
-            </CardDescription>
+            </CardDescription> */}
           </CardHeader>
           <CardContent className="flex flex-col gap-4 px-0">
             <DataTable

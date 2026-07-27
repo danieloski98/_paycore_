@@ -34,11 +34,16 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
-import { SidebarLinks } from "@/lib/constants"
+import { employeeSidebarLinks, SidebarLinks } from "@/lib/constants"
+import { useAtom } from "jotai"
+import { userTypeAtom } from "@/states/user-type-state"
 
 
 function Sidebar() {
   const pathname = usePathname()
+  const [user] = useAtom(userTypeAtom)
+
+  const links = user === "USER" ? SidebarLinks : user === "EMPLOYEE" ? employeeSidebarLinks : null
 
   return (
     <AppSidebar collapsible="icon" className="border-r">
@@ -63,7 +68,7 @@ function Sidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {SidebarLinks.map((item) => {
+              {links?.map((item) => {
                 const isActive =
                   item.href !== "#" &&
                   (pathname === item.href || pathname.startsWith(`${item.href}/`))
