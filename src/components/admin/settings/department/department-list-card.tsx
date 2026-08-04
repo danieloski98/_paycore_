@@ -55,7 +55,7 @@ export function DepartmentListCard({
           </CardDescription>
         </div>
 
-        <Button onClick={() => openModal("add-department")}>
+        <Button size="lg" onClick={() => openModal("add-department")}>
           <Plus className="mr-2 h-4 w-4" />
           New Department
         </Button>

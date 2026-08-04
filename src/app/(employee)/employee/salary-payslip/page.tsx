@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Landmark, FileText, LandmarkIcon } from "lucide-react";
+import { Landmark, FileText, LandmarkIcon, Wallet, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,18 +13,29 @@ import { payslipColumns } from "@/components/data-table/columns/payslip-colums";
 import { DataTable } from "@/components/data-table/data-table";
 import { Spinner } from "@/components/ui/spinner";
 import { EmptyView } from "@/components/customs/empty-view";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
-const StatCard = ({ title, value, icon }: { title: string; value: string; icon?: React.ReactNode }) => (
+const StatCard = ({
+  title,
+  value,
+  icon,
+  iconWrapperClass,
+}: {
+  title: string;
+  value: string;
+  icon?: React.ReactNode;
+  iconWrapperClass?: string;
+}) => (
   <Card className="[--card-spacing:--spacing(6)]">
-    <CardContent>
+    <CardContent className="pt-6">
       <div className="flex items-start justify-between">
         <div>
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{title}</p>
           <p className="text-2xl font-bold mt-1.5">{value}</p>
         </div>
         {icon && (
-          <div className="p-2.5 rounded-lg bg-muted shrink-0">{icon}</div>
+          <div className={cn("p-2.5 rounded-lg shrink-0", iconWrapperClass || "bg-muted text-muted-foreground")}>
+            {icon}
+          </div>
         )}
       </div>
     </CardContent>
@@ -55,9 +67,24 @@ export default function EmployeePayslips() {
     <div className="min-h-screen bg-background p-4 md:p-8">
       {/* Welcome & Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <StatCard title="Total Payslips" value={String(totalPayslips)} icon={<FileText className="h-5 w-5 text-muted-foreground" />} />
-        <StatCard title="Paid Payslips" value={String(paidPayslipsCount)} icon={<Landmark className="h-5 w-5 text-muted-foreground" />} />
-        <StatCard title="Latest Net Pay" value={latestNetPay} />
+        <StatCard 
+          title="Total Payslips" 
+          value={String(totalPayslips)} 
+          icon={<FileText className="h-5 w-5" />} 
+          iconWrapperClass="bg-blue-100 text-blue-700 border border-blue-200"
+        />
+        <StatCard 
+          title="Paid Payslips" 
+          value={String(paidPayslipsCount)} 
+          icon={<Landmark className="h-5 w-5" />} 
+          iconWrapperClass="bg-green-100 text-green-700 border border-green-200"
+        />
+        <StatCard 
+          title="Latest Net Pay" 
+          value={latestNetPay} 
+          icon={<Wallet className="h-5 w-5" />} 
+          iconWrapperClass="bg-green-100 text-green-700 border border-green-200"
+        />
       </div>
 
       <Card>

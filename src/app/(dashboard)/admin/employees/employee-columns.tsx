@@ -132,7 +132,7 @@ export const employeeColumns: ColumnDef<Employee>[] = [
       const { openModal } = useModal()
       return (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild className="ml-6">
             <Button variant="ghost" size="icon">
               <MoreHorizontal className="h-4 w-4" />
             </Button>

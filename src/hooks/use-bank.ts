@@ -61,10 +61,11 @@ export const useCreateBankDetails = () => {
 //     },
 //   });
 
-export const useEmployeeBanks = () => {
+export const useEmployeeBanks = (enabled: boolean = true) => {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["employee-banks"],
-    queryFn: async () => await getEmployeeBanks()
+    queryFn: async () => await getEmployeeBanks(),
+    enabled
   });
 
   return {

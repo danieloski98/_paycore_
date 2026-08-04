@@ -166,6 +166,7 @@ function WalletPage() {
             </CardHeader>
             <CardContent className="flex flex-wrap gap-3">
               <Button
+                size="lg"
                 variant="outline"
                 className="border-primary-foreground/20 text-primary hover:bg-primary-foreground hover:text-primary cursor-pointer"
                 onClick={() => openModal("withdraw-balance", withdraw)}

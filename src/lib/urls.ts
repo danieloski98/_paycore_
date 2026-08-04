@@ -73,5 +73,29 @@ export const URLS = {
         get_payment_history: (company_id: string) => `/payment/company/${company_id}`,
         get_employee_payment_history: (employee_id: string) => `/payment/employee/${employee_id}`,
         withdraw: "/wallet/payout",
+    },
+    earnings: {
+        get_payroll_earnings: (payrollId: string) => `/payroll/${payrollId}/earnings`,
+        get_employee_earnings: (employeeId: string) => `/payroll/earnings/employee/${employeeId}`,
+        create_payroll_earning: (payrollId: string) => `/payroll/${payrollId}/earnings`,
+        create_employee_earning: (employeeId: string) => `/payroll/earnings/employee/${employeeId}`,
+        delete_employee_earning: (employeeId: string, earningId: string) => `/payroll/${employeeId}/${earningId}`,
+        delete_payroll_earning: (payrollId: string, earningId: string) => `/payroll/${payrollId}/earnings/${earningId}`,
+    },
+    deductions: {
+        get_payroll_deductions: (payrollId: string) => `/payroll/${payrollId}/deductions`,
+        get_employee_deductions: (employeeId: string) => `/payroll/deductions/employee/${employeeId}`,
+        create_payroll_deduction: (payrollId: string) => `/payroll/${payrollId}/deductions`,
+        create_employee_deduction: (employeeId: string) => `/payroll/deductions/employee/${employeeId}`,
+        delete_employee_deduction: (employeeId: string, deductionId: string) => `/deductions/employee/${employeeId}/${deductionId}`,
+        delete_payroll_deduction: (payrollId: string, deductionId: string) => `/payroll/${payrollId}/deductions/${deductionId}`,
+    },
+    analytics: {
+        get_company_overview: (companyId: string) => `/analytics/${companyId}`,
+        get_company_leave: (companyId: string) => `/analytics/leave/${companyId}`,
+        get_employee_leave: (employeeId: string) => `/analytics/leave/employee/${employeeId}`,
+        get_employee_dashboard: (employeeId: string) => `/analytics/dashboard/employee/${employeeId}`,
+        get_active_payslips: (companyId: string) => `/analytics/payslips/active/${companyId}`,
+        get_payroll_payslips: (payrollId: string) => `/analytics/payslips/${payrollId}`,
     }
 }

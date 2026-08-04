@@ -17,7 +17,8 @@ export default function EmployeePayslipModal() {
   const { isOpen, closeModal, data } = useModal();
   const [isGenerating, setIsGenerating] = useState(false);
   const [employee] = useAtom(employeeAtom);
-  const { banks } = useEmployeeBanks();
+  const modalOpen = isOpen("employee-payslip-details");
+  const { banks } = useEmployeeBanks(modalOpen);
 
   const payslip = data as any;
 

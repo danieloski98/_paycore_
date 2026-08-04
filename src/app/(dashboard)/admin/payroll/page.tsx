@@ -2,12 +2,12 @@
 
 
 import {
-  BellIcon,
   Plus,
   TrendingUpIcon,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -21,36 +21,20 @@ import { DataTable, TableFilter } from "@/components/data-table/data-table"
 import { useModal } from "@/hooks/use-modal"
 import { useGetPayrolls, useStartPayrollProcessing } from "@/hooks/use-payroll"
 import { payrollColumns } from "@/components/data-table/columns/payroll-column"
-import { PayrollItem } from "@/models/payroll-model"
+import { PayrollItem, Status, payrollStatusConfig } from "@/models/payroll-model"
 import { useState } from "react"
 import { FilterOption } from "@/components/data-table/data-table-filter"
 import { toast } from "sonner"
-
-const summaryCards = [
-  {
-    title: "Total Payout (YTD)",
-    value: "₦42,850,000.00",
-    description: "+12% vs last year",
-    accent: "text-green-600",
-    icon: TrendingUpIcon,
-  },
-  {
-    title: "Employees Paid",
-    value: "124",
-    description: "Across all active teams",
-    avatars: ["AO", "IE", "KA", "+21"],
-  },
-  {
-    title: "Next Remittance",
-    value: "Oct 31",
-    description: "4 days left",
-    accent: "text-red-500",
-    icon: BellIcon,
-  },
-]
+import { useAuthUser } from "@/hooks/use-auth-user"
+import { useGetActivePayslipsAnalytics } from "@/hooks/use-analytics"
+import { cn, getPayrollStatusStyle } from "@/lib/utils"
 
 function PayrollPage() {
   const { openModal } = useModal()
+  const user = useAuthUser();
+  const companyId = user?.companyId || "";
+  const { analytics: activePayslips, isLoading: isActivePayslipsLoading } = useGetActivePayslipsAnalytics(companyId);
+
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -60,6 +44,33 @@ function PayrollPage() {
     pagination.pageSize
   )
   const payrolls = (payrollData ?? []) as PayrollItem[];
+
+  const summaryCards = [
+    {
+      title: "Active Payroll",
+      value: activePayslips?.activePayroll?.name || "No active payroll",
+      description: activePayslips?.activePayroll 
+        ? `Status: ${payrollStatusConfig[activePayslips.activePayroll.status as Status]?.label || activePayslips.activePayroll.status}` 
+        : "Next scheduled disbursement",
+      accent: activePayslips?.activePayroll?.status === "PROCESSING" ? "text-blue-600" : "text-muted-foreground",
+      icon: TrendingUpIcon,
+      status: activePayslips?.activePayroll?.status as Status,
+    },
+    {
+      title: "Processed Payslips",
+      value: String(activePayslips?.processedPayslipsCount ?? 0),
+      description: "Successfully processed",
+      accent: "text-green-600",
+      icon: CheckCircle2,
+    },
+    {
+      title: "Pending / Failed Payslips",
+      value: `${activePayslips?.pendingPayslipsCount ?? 0} / ${activePayslips?.failedPayslipsCount ?? 0}`,
+      description: `Pending: ${activePayslips?.pendingPayslipsCount ?? 0} | Failed: ${activePayslips?.failedPayslipsCount ?? 0}`,
+      accent: (activePayslips?.failedPayslipsCount ?? 0) > 0 ? "text-red-500" : "text-orange-500",
+      icon: AlertCircle,
+    },
+  ]
 
   const yearOptions: FilterOption[] = [
     ...new Set(payrolls.map((x) => x.year)),
@@ -116,38 +127,48 @@ function PayrollPage() {
           </p>
         </section>
 
-        <section className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,0.7fr)_minmax(0,0.7fr)]">
-          {summaryCards.map((item) => (
-            <Card key={item.title} className="shadow-sm">
-              <CardHeader>
-                <CardAction>
-                  {item.icon ? <item.icon className="text-muted-foreground" /> : null}
-                </CardAction>
-                <CardDescription>{item.title}</CardDescription>
-                <CardTitle className="text-4xl font-semibold">{item.value}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {item.avatars ? (
-                  <div className="flex items-center gap-2">
-                    <div className="flex -space-x-2">
-                      {item.avatars.map((avatar) => (
-                        <div
-                          key={avatar}
-                          className="flex size-8 items-center justify-center rounded-full border-2 border-background bg-muted text-xs font-semibold text-muted-foreground"
-                        >
-                          {avatar}
-                        </div>
-                      ))}
-                    </div>
+        <section className="grid gap-4 xl:grid-cols-3">
+          {summaryCards.map((item) => {
+            const styles = item.status ? getPayrollStatusStyle(item.status) : null;
+            let iconWrapperClass = "bg-muted text-muted-foreground border-transparent";
+            if (item.title === "Active Payroll" && styles) {
+              iconWrapperClass = cn(styles.bgColor, styles.textColor, "border");
+            } else if (item.title === "Processed Payslips") {
+              iconWrapperClass = "bg-green-100 text-green-700 border border-green-200";
+            } else if (item.title === "Pending / Failed Payslips") {
+              const hasFailed = (activePayslips?.failedPayslipsCount ?? 0) > 0;
+              iconWrapperClass = hasFailed 
+                ? "bg-red-100 text-red-700 border border-red-200" 
+                : "bg-yellow-100 text-yellow-700 border border-yellow-200";
+            }
+
+            return (
+              <Card key={item.title} className="shadow-sm">
+                <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
+                  <div className="space-y-1">
+                    <CardDescription className="text-xs uppercase tracking-[0.18em]">{item.title}</CardDescription>
+                    <CardTitle className="text-4xl font-semibold">
+                      {isActivePayslipsLoading ? (
+                        <span className="h-10 w-24 rounded bg-muted/40 animate-pulse inline-block" />
+                      ) : (
+                        item.value
+                      )}
+                    </CardTitle>
                   </div>
-                ) : (
-                  <p className={`text-sm font-medium ${item.accent ?? "text-muted-foreground"}`}>
+                  {item.icon && (
+                    <div className={cn("h-10 w-10 rounded flex items-center justify-center shrink-0", iconWrapperClass)}>
+                      <item.icon className="h-5 w-5" />
+                    </div>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  <p className={cn("text-sm font-medium", item.accent ?? "text-muted-foreground")}>
                     {item.description}
                   </p>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            )
+          })}
         </section>
 
         <section className="grid gap-4">
@@ -162,7 +183,7 @@ function PayrollPage() {
                 filters={payrollFilters}
                 searchPlaceholder="Search payroll..."
                 getRowLink={(payroll) => `/admin/payroll/${payroll.id}/payslip`}
-                action={<Button onClick={() => openModal("add-payroll")}>
+                action={<Button size="lg" onClick={() => openModal("add-payroll")}>
                   <Plus /> Start New Payroll
                 </Button>}
               />

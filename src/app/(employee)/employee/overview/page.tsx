@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { Calendar, ChevronLeftIcon, ChevronRightIcon, WalletIcon, Landmark, Trash2, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
 import { DataTable } from '@/components/data-table/data-table'
 import { useGetEmployeeById } from '@/hooks/use-employees'
@@ -18,6 +19,7 @@ import { useEmployeeBanks, useSetPrimaryBank, useDeleteBank } from '@/hooks/use-
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useGetEmployeeDashboardAnalytics } from '@/hooks/use-analytics'
 
 export default function OverviewPage() {
   const [user] = useAtom(employeeAtom)
@@ -25,6 +27,7 @@ export default function OverviewPage() {
   const { employee } = useGetEmployeeById(user?.id!)
   const [page, setPage] = useState(1);
   const { data: transactionsData, isLoading: transactionsLoading, isError: transactionsError } = useGetEmployeePaymentHistory(user?.id, page, 10)
+  const { analytics, isLoading: isAnalyticsLoading } = useGetEmployeeDashboardAnalytics(user?.id!);
 
   const transactionMeta = transactionsData?.data?.data;
   const limit = transactionMeta?.limit || 10;
@@ -38,6 +41,24 @@ export default function OverviewPage() {
   const { banks, isLoading: banksLoading } = useEmployeeBanks();
   const { mutate: setPrimary, isPending: settingPrimary } = useSetPrimaryBank();
   const { mutate: deleteBankMutation, isPending: deletingBank } = useDeleteBank();
+
+  const nextPaymentDate = (() => {
+    const txs = transactionsData?.data?.data?.data;
+    if (txs && txs.length > 0) {
+      const latestTx = txs[0];
+      if (latestTx?.createdAt) {
+        try {
+          const lastDate = new Date(latestTx.createdAt);
+          const nextDate = new Date(lastDate);
+          nextDate.setMonth(nextDate.getMonth() + 1);
+          return nextDate.toISOString();
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+    return analytics?.nextPaymentDate || null;
+  })();
 
   const primaryBank = banks?.find((b: any) => b.isPrimary) ?? banks?.[0];
 
@@ -63,6 +84,35 @@ export default function OverviewPage() {
     });
   };
 
+  const formatCurrency = (val: number) => {
+    return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(val || 0);
+  };
+
+  const formatPayDate = (dateStr: string | null) => {
+    if (!dateStr) return "Not scheduled";
+    try {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const getDaysUntil = (dateStr: string | null) => {
+    if (!dateStr) return "No upcoming payroll";
+    try {
+      const target = new Date(dateStr);
+      const diffTime = target.getTime() - new Date().getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return "Disbursed";
+      if (diffDays === 0) return "Today";
+      if (diffDays === 1) return "Tomorrow";
+      return `In ${diffDays} days`;
+    } catch {
+      return "";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Main Content */}
@@ -76,39 +126,65 @@ export default function OverviewPage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid gap-6 md:grid-cols-3 mb-6">
-          <Card className='col-span-2'>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">TOTAL PAYMENTS RECEIVED (YTD)</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold">₦8,450,000.00</span>
-                  <span className="text-sm font-medium text-green-600">+12.5%</span>
-                </div>
+        {isAnalyticsLoading || transactionsLoading ? (
+          <div className="grid gap-6 md:grid-cols-3 mb-6">
+            <Card className="col-span-2">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-48" />
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Skeleton className="h-10 w-64 bg-muted/40 animate-pulse" />
                 <Separator />
-                <div className="text-xs text-muted-foreground">
-                  Base Salary <span className="float-right">₦{(employee?.salary)?.toLocaleString()} / mo</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                <Skeleton className="h-4 w-32 bg-muted/40 animate-pulse" />
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Next Payment Date</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div>
-                <p className="text-3xl font-bold">Oct 28, 2024</p>
-                <p className="text-xs text-muted-foreground mt-2">In 6 days</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-32" />
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Skeleton className="h-10 w-48 bg-muted/40 animate-pulse" />
+                <Skeleton className="h-4 w-20 bg-muted/40 animate-pulse" />
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-3 mb-6">
+            <Card className='col-span-2'>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">TOTAL PAYMENTS RECEIVED (YTD)</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold">{formatCurrency(analytics?.ytdEarnings || 0)}</span>
+                  </div>
+                  <Separator />
+                  <div className="text-xs text-muted-foreground">
+                    Base Salary <span className="float-right">₦{(employee?.salary)?.toLocaleString()} / mo</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Next Payment Date</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div>
+                  <p className="text-3xl font-bold">{formatPayDate(nextPaymentDate)}</p>
+                  <p className="text-xs text-muted-foreground mt-2">{getDaysUntil(nextPaymentDate)}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Bank Account & Payment History */}
         <div className="grid gap-6 md:grid-cols-3 mb-6">

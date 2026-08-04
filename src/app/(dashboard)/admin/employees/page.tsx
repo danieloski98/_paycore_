@@ -4,9 +4,7 @@ import { useState } from "react"
 import { PaginationState } from "@tanstack/react-table"
 import {
   BriefcaseBusinessIcon,
-  DownloadIcon,
   PlusIcon,
-  ShieldCheckIcon,
   UsersIcon,
 } from "lucide-react"
 
@@ -19,38 +17,33 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useModal } from "@/hooks/use-modal"
 import { DataTable } from "@/components/data-table/data-table"
 import { useGetEmployees } from "@/hooks/use-employees"
 import { employeeColumns } from "./employee-columns"
-
-const employeeStats = [
-  {
-    title: "Total Employees",
-    value: "124",
-    description: "112 active, 12 pending onboarding",
-    icon: UsersIcon,
-  },
-  {
-    title: "Departments",
-    value: "08",
-    description: "HR, Finance, Engineering, Operations",
-    icon: BriefcaseBusinessIcon,
-  },
-  {
-    title: "Compliance Coverage",
-    value: "98%",
-    description: "KYC and payroll profile completion",
-    icon: ShieldCheckIcon,
-  },
-]
+import { useGetDepartments } from "@/hooks/use-department"
 
 function EmployeesPage() {
   const { openModal } = useModal()
 
-  // API is 1-indexed, TanStack is 0-indexed — adjust the args below to
-  // whatever shape useGetEmployees actually expects.
-  const { employees, isLoading } = useGetEmployees();
+  const { employees, isLoading: isEmployeesLoading } = useGetEmployees();
+  const { departments, isLoading: isDepartmentsLoading } = useGetDepartments()
+
+  const employeeStats = [
+    {
+      title: "Total Employees",
+      value: employees.length ?? 0,
+      description: `${employees.length} active`,
+      icon: UsersIcon,
+    },
+    {
+      title: "Departments",
+      value: departments.length ?? 0,
+      description: "HR, Finance, Engineering, Operations",
+      icon: BriefcaseBusinessIcon,
+    },
+  ]
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">
@@ -67,31 +60,50 @@ function EmployeesPage() {
             <DownloadIcon data-icon="inline-start" />
             Export Directory
           </Button> */}
-          <Button onClick={() => openModal("new-employee")}>
+          <Button size="lg" onClick={() => openModal("new-employee")}>
             <PlusIcon data-icon="inline-start" />
             Add Employee
           </Button>
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-3">
-        {employeeStats.map((stat) => (
-          <Card key={stat.title} className="shadow-sm">
-            <CardHeader>
-              <CardAction>
-                <stat.icon className="text-muted-foreground" />
-              </CardAction>
-              <CardDescription className="text-xs uppercase tracking-[0.18em]">
-                {stat.title}
-              </CardDescription>
-              <CardTitle className="text-4xl font-semibold">{stat.value}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{stat.description}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </section>
+      {isEmployeesLoading || isDepartmentsLoading ? (
+        <section className="grid gap-4 lg:grid-cols-3">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <Card key={i} className="shadow-sm">
+              <CardHeader className="space-y-2">
+                <CardAction>
+                  <Skeleton className="size-5 rounded bg-muted/30" />
+                </CardAction>
+                <Skeleton className="h-3.5 w-28" />
+                <Skeleton className="h-9 w-16" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-4 w-40" />
+              </CardContent>
+            </Card>
+          ))}
+        </section>
+      ) : (
+        <section className="grid gap-4 lg:grid-cols-3">
+          {employeeStats.map((stat) => (
+            <Card key={stat.title} className="shadow-sm">
+              <CardHeader>
+                <CardAction>
+                  <stat.icon className="text-muted-foreground" />
+                </CardAction>
+                <CardDescription className="text-xs uppercase tracking-[0.18em]">
+                  {stat.title}
+                </CardDescription>
+                <CardTitle className="text-4xl font-semibold">{stat.value}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{stat.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </section>
+      )}
 
       <section className="grid gap-4">
         <Card className="shadow-sm">
@@ -105,7 +117,7 @@ function EmployeesPage() {
             <DataTable
               columns={employeeColumns}
               data={employees}
-              isLoading={isLoading}
+              isLoading={isEmployeesLoading}
               searchColumn={["firstName", "lastName", "email"]}
               searchPlaceholder="Search employees..."
               filters={[
