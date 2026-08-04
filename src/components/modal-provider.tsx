@@ -16,6 +16,7 @@ import ManageLeave from "./admin/leave/modal/manage-leave";
 import EditPayrollModal from "./admin/payroll/modal/edit-payroll";
 import { WithdrawBalanceModal } from "./employee/wallet/modal/withdraw-balance";
 import EmployeePayslipModal from "./employee/salary-payslip/modal/employee-payslip-modal";
+import AddEarningModal from "./admin/payroll/modal/add-earning/add-earning-modal";
 
 const FundWalletModal = dynamic(() => import("./admin/wallet/modals/fund-wallet-modal"), {
   ssr: false,
@@ -42,6 +43,7 @@ export function ModalProvider() {
       <EmployeeLeaveModal />
       <WithdrawBalanceModal />
       <EmployeePayslipModal />
+      <AddEarningModal />
       {/* <Success */}
     </>
   );

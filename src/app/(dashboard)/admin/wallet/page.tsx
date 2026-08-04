@@ -143,7 +143,7 @@ function WalletPage() {
               )}
             </CardHeader>
             <CardContent className="flex flex-wrap gap-3">
-              <Button variant="secondary" onClick={() => openModal('fund-wallet')}>
+              <Button size="lg" variant="secondary" onClick={() => openModal('fund-wallet')}>
                 <PlusCircleIcon data-icon="inline-start" />
                 Fund Wallet
               </Button>

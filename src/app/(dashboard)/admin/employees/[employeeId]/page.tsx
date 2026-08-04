@@ -43,53 +43,10 @@ import { useDeleteEmployee, useGetCompanyEmployeeById, useGetEmployeeById } from
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useModal } from "@/hooks/use-modal"
 import { format } from "date-fns"
-import { delete_employee } from "@/services/employees/employee-services"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
+import { createEmployeeEarning, createEmployeeDeduction } from "@/services/payroll/earnings-deductions-service"
 
-
-
-const employeeDirectory = {
-  "adesola-oni": {
-    name: "Adesola Oni",
-    role: "HR Manager",
-    department: "Human Resources",
-    email: "adesola.oni@techcorp.ng",
-    phone: "+234 801 555 0102",
-    status: "Active",
-  },
-  "ifeanyi-eze": {
-    name: "Ifeanyi Eze",
-    role: "Finance Lead",
-    department: "Finance",
-    email: "i.eze@techcorp.ng",
-    phone: "+234 803 555 0104",
-    status: "Active",
-  },
-  "amina-jibril": {
-    name: "Amina Jibril",
-    role: "UX Designer",
-    department: "Product Design",
-    email: "amina.j@techcorp.ng",
-    phone: "+234 809 555 0107",
-    status: "On Leave",
-  },
-  "tunde-balogun": {
-    name: "Tunde Balogun",
-    role: "HR Specialist",
-    department: "Human Resources",
-    email: "tunde.b@techcorp.ng",
-    phone: "+234 810 555 0109",
-    status: "Pending",
-  },
-} as const
-
-function toTitleCase(value: string) {
-  return value
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ")
-}
 
 function EmployeeDetailsPage() {
   const [activeTab, setActiveTab] = useState('personal')
@@ -191,12 +148,32 @@ function EmployeeDetailsPage() {
             <CardTitle className="text-lg">QUICK ACTIONS</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button variant="default" className="w-full justify-start" size="sm" onClick={() => openModal("edit-employee", employee)}>
+            <Button variant="default" className="w-full justify-start cursor-pointer" size="sm" onClick={() => openModal("edit-employee", employee)}>
               {/* open edit employee modal here */}
               <Edit2 className="h-4 w-4 mr-2" />
               Edit Profile
             </Button>
-            <Button variant="outline" className="w-full justify-start text-destructive hover:text-destructive" size="sm" onClick={deactivateEmployee}>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start cursor-pointer" 
+              size="sm" 
+              onClick={() => 
+                openModal("add-earning", {
+                  type: "employee",
+                  employeeId: employee?.id,
+                  submitEarning: (payload: any) => createEmployeeEarning(employee?.id!, payload),
+                  submitDeduction: (payload: any) => createEmployeeDeduction(employee?.id!, payload),
+                  invalidateKeys: [
+                    ["employee-earnings", employee?.id],
+                    ["employee-deductions", employee?.id]
+                  ]
+                })
+              }
+            >
+              <BriefcaseBusinessIcon className="h-4 w-4 mr-2" />
+              Manage Earnings/Deductions
+            </Button>
+            <Button variant="outline" className="w-full justify-start text-destructive hover:text-destructive cursor-pointer" size="sm" onClick={deactivateEmployee}>
               <Trash2 className="h-4 w-4 mr-2" />
               Deactivate Employee
             </Button>
@@ -209,12 +186,9 @@ function EmployeeDetailsPage() {
         <Card className="mt-6">
           <CardHeader className="pb-0">
             <TabsList variant={"line"} className="bg-transparent flex justify-start w-full border-b border-border rounded-none p-0 h-auto">
-              <div className="w-2/3 flex">
+              <div className="w-1/3 flex">
                 <TabsTrigger value="personal" className="border-b-2 border-transparent">Personal Info</TabsTrigger>
                 <TabsTrigger value="job" className="border-b-2 border-transparent">Job Details</TabsTrigger>
-                {/* <TabsTrigger value="payroll" className="border-b-2 border-transparent">Payroll</TabsTrigger> */}
-                <TabsTrigger value="leave" className="border-b-2 border-transparent">Leave History</TabsTrigger>
-                <TabsTrigger value="documents" className="border-b-2 border-transparent">Documents</TabsTrigger>
               </div>
             </TabsList>
           </CardHeader>
@@ -231,28 +205,12 @@ function EmployeeDetailsPage() {
                     <label className="text-xs font-semibold text-muted-foreground uppercase">Phone Number</label>
                     <p className="text-sm font-medium mt-1">{employee?.phone}</p>
                   </div>
-                  {/* <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase">Gender</label>
-                    <p className="text-sm font-medium mt-1">Female</p>
-                  </div> */}
-                  {/* <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase">Home Address</label>
-                    <p className="text-sm font-medium mt-1">42 Bourdillon Rd, Ikoyi, Lagos, Nigeria</p>
-                  </div> */}
                 </div>
                 <div className="space-y-4">
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground uppercase">Email Address</label>
                     <p className="text-sm font-medium mt-1">{employee?.email}</p>
                   </div>
-                  {/* <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase">Date of Birth</label>
-                    <p className="text-sm font-medium mt-1">14th May 1994</p>
-                  </div> */}
-                  {/* <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase">Nationality</label>
-                    <p className="text-sm font-medium mt-1">Nigerian</p>
-                  </div> */}
                 </div>
               </div>
             </TabsContent>
@@ -291,52 +249,18 @@ function EmployeeDetailsPage() {
                 </div>
               </div>
             </TabsContent>
-            {/* <TabsContent value="payrol">
-              <div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Pay Period</TableHead>
-                      <TableHead>Net Salary</TableHead>
-                      <TableHead>Tax (PAYE)</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell className="font-medium">June 2024</TableCell>
-                      <TableCell>₦850,000</TableCell>
-                      <TableCell>₦42,500</TableCell>
-                      <TableCell><Badge variant="outline">Paid</Badge></TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium">May 2024</TableCell>
-                      <TableCell>₦850,000</TableCell>
-                      <TableCell>₦42,500</TableCell>
-                      <TableCell><Badge variant="outline">Paid</Badge></TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="font-medium">April 2024</TableCell>
-                      <TableCell>₦850,000</TableCell>
-                      <TableCell>₦42,500</TableCell>
-                      <TableCell><Badge variant="outline">Paid</Badge></TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </div>
-            </TabsContent> */}
-            <TabsContent value="leave" className="leave">
+            {/* <TabsContent value="leave" className="leave">
               <div className="text-center py-8">
                 <p className="text-muted-foreground">Leave history will be displayed here</p>
               </div>
-            </TabsContent>
+            </TabsContent> */}
           </CardContent>
 
         </Card>
       </Tabs>
 
       {/* Recent Payroll Activity */}
-      <Card className="mt-6">
+      {/* <Card className="mt-6">
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <div>
             <CardTitle>Change to paysip history TODO</CardTitle>
@@ -376,7 +300,7 @@ function EmployeeDetailsPage() {
             </TableBody>
           </Table>
         </CardContent>
-      </Card>
+      </Card> */}
     </div >
   )
 }

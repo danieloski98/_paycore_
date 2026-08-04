@@ -1,21 +1,12 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, Download, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
 import { useModal } from "@/hooks/use-modal";
-import { months } from "@/lib/constants";
 import { Payslip } from "@/models/payslip-model";
-import { generatePayslipPDF } from "@/lib/pdfGenerator";
+
 
 export const payslipColumns: ColumnDef<Payslip>[] = [
     {
@@ -51,13 +42,6 @@ export const payslipColumns: ColumnDef<Payslip>[] = [
         },
     },
 
-    // {
-    //     accessorKey: "position",
-    //     header: "Position",
-    //     cell: ({ row }) => (
-    //         <span>{row.original.employee.position}</span>
-    //     ),
-    // },
     {
         accessorKey: "date",
         header: "Date",

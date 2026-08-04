@@ -18,55 +18,69 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 import { PayrollTrendChart } from "@/components/charts/payroll-charts"
 import { useModal } from "@/hooks/use-modal"
 import { DataTable, TableFilter } from "@/components/data-table/data-table"
 import { payrollColumns } from "@/components/data-table/columns/payroll-column"
 import { useGetPayrolls } from "@/hooks/use-payroll"
-import { PayrollItem } from "@/models/payroll-model"
+import { PayrollItem, Status, payrollStatusConfig } from "@/models/payroll-model"
 import { FilterOption } from "@/components/data-table/data-table-filter"
 
-const stats = [
-  {
-    title: "Wallet Balance",
-    value: "₦12.5M",
-    hint: "+₦2.1M Today",
-    subtext: "Available company balance",
-    icon: LandmarkIcon,
-    tone: "outline" as const,
-  },
-  {
-    title: "Total Employees",
-    value: "124",
-    hint: "Due in 3 days",
-    subtext: "Across active departments",
-    icon: UsersIcon,
-    tone: "secondary" as const,
-  },
-  {
-    title: "Upcoming Payroll",
-    value: "₦4.2M",
-    // hint: "Due in 3 days",
-    subtext: "Next scheduled disbursement",
-    icon: CalendarClockIcon,
-    tone: "destructive" as const,
-  },
-  {
-    title: "Pending Leave",
-    value: "5",
-    hint: "Needs review",
-    subtext: "Requests awaiting approval",
-    icon: AlertCircleIcon,
-    tone: "outline" as const,
-  },
-]
-
+import { useAuthUser } from "@/hooks/use-auth-user"
+import { useGetCompanyAnalytics } from "@/hooks/use-analytics"
+import { useGetBalance } from "@/hooks/use-wallet"
+import { cn, getPayrollStatusStyle } from "@/lib/utils"
 
 function OverviewPage() {
   const { openModal } = useModal();
+  const user = useAuthUser();
+  const companyId = user?.companyId || "";
 
+  const { analytics, isLoading: isAnalyticsLoading } = useGetCompanyAnalytics(companyId);
+  const { data: balanceData, isLoading: isBalanceLoading } = useGetBalance(companyId);
   const { data: payrollData = [], isLoading } = useGetPayrolls()
+
+
+  const formatCurrency = (val: number) => {
+    return new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(val || 0);
+  };
+
+  const stats = [
+    {
+      title: "Wallet Balance",
+      value: formatCurrency(Number(balanceData?.data?.data?.balance || 0)),
+      hint: "",
+      subtext: "Available company balance",
+      icon: LandmarkIcon,
+      tone: "outline" as const,
+    },
+    {
+      title: "Total Employees",
+      value: String(analytics?.totalEmployees ?? 0),
+      hint: "Active",
+      subtext: "Across active departments",
+      icon: UsersIcon,
+      tone: "secondary" as const,
+    },
+    {
+      title: "Active Payroll",
+      value: analytics?.activePayroll?.name || "No active payroll",
+      hint: analytics?.activePayroll ? (payrollStatusConfig[analytics.activePayroll.status as Status]?.label || analytics.activePayroll.status) : "None",
+      subtext: "Next scheduled disbursement",
+      icon: CalendarClockIcon,
+      tone: "destructive" as const,
+      status: analytics?.activePayroll?.status as Status,
+    },
+    {
+      title: "Pending Leave",
+      value: String(analytics?.pendingLeaveRequests ?? 0),
+      subtext: "Requests awaiting approval",
+      icon: AlertCircleIcon,
+      tone: "warning" as const,
+    },
+  ];
 
   const payrolls = (payrollData ?? []) as PayrollItem[];
 
@@ -130,42 +144,77 @@ function OverviewPage() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => openModal("new-employee")}>
+          <Button size="lg" onClick={() => openModal("new-employee")}>
             <UserRoundCheckIcon data-icon="inline-start" />
             Add Employee
           </Button>
-          {/* <Button>
-            <HandCoinsIcon data-icon="inline-start" />
-            Run Payroll
-          </Button> */}
         </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title} className="shadow-sm p-4">
-            <CardHeader>
-              <CardDescription className="text-xs uppercase tracking-[0.18em]">
-                {stat.title}
-              </CardDescription>
-              {stat.hint && (
-                <CardAction>
-                  <Badge variant={stat.tone}>{stat.hint}</Badge>
-                </CardAction>
-              )}
-              <CardTitle className="flex items-center gap-2 text-2xl">
-                <span className="flex size-9 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                  <stat.icon />
-                </span>
-                {stat.value}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">{stat.subtext}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </section>
+      {isAnalyticsLoading || isBalanceLoading ? (
+        <section className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i} className="shadow-sm p-4">
+              <CardHeader className="space-y-2">
+                <Skeleton className="h-4 w-28" />
+                <div className="flex items-center gap-2">
+                  <Skeleton className="size-9 rounded-lg" />
+                  <Skeleton className="h-8 w-32" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-4 w-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </section>
+      ) : (
+        <section className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
+          {stats.map((stat) => {
+            const styles = stat.status ? getPayrollStatusStyle(stat.status) : null;
+            console.log(stat)
+            let iconWrapperClass = "bg-muted text-muted-foreground border-transparent";
+            if (stat.title === "Total Employees") {
+              iconWrapperClass = "bg-blue-100 text-blue-700 border border-blue-200";
+            } else if (stat.title === "Active Payroll" && styles) {
+              iconWrapperClass = cn(styles.bgColor, styles.textColor, "border");
+            } else if (stat.title === "Pending Leave Requests" || stat.tone === "warning") {
+              iconWrapperClass = "bg-yellow-100 text-yellow-700 border border-yellow-200";
+            } else if (stat.title === "Wallet Balance") {
+              iconWrapperClass = "bg-green-100 text-green-700 border border-green-200";
+            }
+
+            return (
+              <Card key={stat.title} className="shadow-sm p-4">
+                <CardHeader>
+                  <CardDescription className="text-xs uppercase tracking-[0.18em]">
+                    {stat.title}
+                  </CardDescription>
+                  {stat.hint && (
+                    <CardAction>
+                      <Badge 
+                        variant={stat.status ? undefined : stat.tone} 
+                        className={stat.status ? cn(styles?.textColor, styles?.bgColor) : ""}
+                      >
+                        {(stat.hint)?.toUpperCase()}
+                      </Badge>
+                    </CardAction>
+                  )}
+                  <CardTitle className="flex items-center gap-2 text-2xl">
+                    <span className={cn("flex size-9 items-center justify-center rounded-lg shrink-0", iconWrapperClass)}>
+                      <stat.icon className="size-5" />
+                    </span>
+                    {stat.value}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">{stat.subtext}</p>
+                </CardContent>
+              </Card>
+            )
+          })}
+        </section>
+      )}
 
       <section className="grid gap-4">
         <div className="grid gap-4">

@@ -5,7 +5,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { months } from "@/lib/constants";
 import { PayrollItem } from "@/models/payroll-model";
-import { PayrollActions } from "./payroll-action";
+import { ProcessPayrollButton, PayrollMoreActions } from "./payroll-action";
 import { cn, getPayrollStatusStyle } from "@/lib/utils";
 
 
@@ -59,13 +59,21 @@ export const payrollColumns: ColumnDef<PayrollItem>[] = [
     },
   },
   {
+    id: "process",
+    header: "Process",
+    cell: ({ row }) => {
+      return (
+        <ProcessPayrollButton payroll={row?.original} />
+      )
+    },
+  },
+  {
     id: "actions",
     header: "Action",
     cell: ({ row }) => {
       return (
-        <PayrollActions payroll={row?.original} />
+        <PayrollMoreActions payroll={row?.original} />
       )
-
     },
   },
 ];

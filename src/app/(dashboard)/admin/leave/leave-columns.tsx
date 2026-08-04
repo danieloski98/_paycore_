@@ -134,7 +134,7 @@ export const leaveColumns: ColumnDef<LeaveRequest>[] = [
             const { openModal } = useModal();
 
             return (
-                <div className="flex justify-end pr-6">
+                <div className="flex items-center ml-6">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button

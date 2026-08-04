@@ -20,6 +20,7 @@ export type ModalType =
   | "update-employee"
   | "withdraw-balance"
   | "employee-payslip-details"
+  | "add-earning"
   | null;
 
 export interface ModalState<T = unknown> {

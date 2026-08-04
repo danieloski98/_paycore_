@@ -1,12 +1,12 @@
 "use client"
 
 import {
-  CalendarDaysIcon,
-  Grid2x2Icon,
-  ShieldAlertIcon,
+  CalendarCheck,
+  CalendarX,
+  Clock,
+  ClipboardList,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
@@ -14,39 +14,55 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { DataTable } from "@/components/data-table/data-table"
 import { leaveColumns } from "./leave-columns"
 import { useGetCompanyLeaves } from "@/hooks/use-leave"
+import { cn, getLeaveStatusStyle } from "@/lib/utils"
 
-const stats = [
-  {
-    title: "On Leave Today",
-    value: "42",
-    note: "+3 from yesterday",
-    accent: "text-green-600",
-    icon: Grid2x2Icon,
-  },
-  {
-    title: "Pending Requests",
-    value: "12",
-    note: "High Priority",
-    accent: "text-orange-500",
-    icon: ShieldAlertIcon,
-  },
-  {
-    title: "Upcoming Next Week",
-    value: "8",
-    note: "Scheduled employees",
-    accent: "text-muted-foreground",
-    icon: CalendarDaysIcon,
-  },
-]
-
+import { useAuthUser } from "@/hooks/use-auth-user"
+import { useGetCompanyLeaveAnalytics } from "@/hooks/use-analytics"
 
 function LeavePage() {
-
   const { leaves, isLoading } = useGetCompanyLeaves()
-  
+  const user = useAuthUser();
+  const companyId = user?.companyId || "";
+  const { analytics, isLoading: isLeaveAnalyticsLoading } = useGetCompanyLeaveAnalytics(companyId);
+
+  const stats = [
+    {
+      title: "On Leave Today (Approved)",
+      value: String(analytics?.approvedLeaveRequests ?? 0),
+      note: "Approved requests",
+      accent: "text-green-600",
+      icon: CalendarCheck,
+      status: "ACCEPTED",
+    },
+    {
+      title: "Pending Requests",
+      value: String(analytics?.pendingLeaveRequests ?? 0),
+      note: (analytics?.pendingLeaveRequests ?? 0) > 0 ? "Needs Review" : "No pending requests",
+      accent: "text-orange-500",
+      icon: Clock,
+      status: "PENDING",
+    },
+    {
+      title: "Total Leave Requests",
+      value: String(analytics?.totalLeaveRequests ?? 0),
+      note: "All requests submitted",
+      accent: "text-muted-foreground",
+      icon: ClipboardList,
+      status: null,
+    },
+    {
+      title: "Total Rejected Requests",
+      value: String(analytics?.rejectedLeaveRequests ?? 0),
+      note: "Rejected requests",
+      accent: "text-red-500",
+      icon: CalendarX,
+      status: "REJECTED",
+    },
+  ];
 
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 lg:p-6">
@@ -59,38 +75,47 @@ function LeavePage() {
         </div>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[repeat(3,minmax(0,1fr))_280px]">
-        {stats.map((stat) => (
-          <Card key={stat.title} className="shadow-sm">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <stat.icon className="text-muted-foreground" />
-                <span className={`text-sm font-medium ${stat.accent}`}>{stat.note}</span>
-              </div>
-              <CardDescription className="text-xs uppercase tracking-[0.18em]">
-                {stat.title}
-              </CardDescription>
-              <CardTitle className="text-4xl font-semibold">{stat.value}</CardTitle>
-            </CardHeader>
-          </Card>
-        ))}
-
-        <Card className="bg-primary text-primary-foreground shadow-sm">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <Grid2x2Icon className="text-primary-foreground/80" />
-              <Badge variant="secondary">Holiday</Badge>
-            </div>
-            <CardDescription className="text-primary-foreground/70">
-              Public Holidays
-            </CardDescription>
-            <CardTitle className="text-3xl">National Day</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xl">Oct 1st, 2024</p>
-          </CardContent>
-        </Card>
-      </section>
+      {isLeaveAnalyticsLoading ? (
+        <section className="grid gap-4 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i} className="shadow-sm">
+              <CardHeader className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="size-5 rounded bg-muted/30" />
+                  <Skeleton className="h-4 w-24" />
+                </div>
+                <Skeleton className="h-3 w-32" />
+                <Skeleton className="h-10 w-16" />
+              </CardHeader>
+            </Card>
+          ))}
+        </section>
+      ) : (
+        <section className="grid gap-4 xl:grid-cols-4">
+          {stats.map((stat) => {
+            const statusStyle = stat.status ? getLeaveStatusStyle(stat.status) : null;
+            return (
+              <Card key={stat.title} className="shadow-sm">
+                <CardHeader className="flex flex-row items-start justify-between space-y-0">
+                  <div className="space-y-1">
+                    <CardDescription className="text-xs uppercase tracking-[0.18em]">
+                      {stat.title}
+                    </CardDescription>
+                    <CardTitle className="text-4xl font-semibold">{stat.value}</CardTitle>
+                    <p className={`text-xs ${stat.accent}`}>{stat.note}</p>
+                  </div>
+                  <div className={cn(
+                    "h-10 w-10 rounded flex items-center justify-center border",
+                    statusStyle?.className || "bg-muted text-muted-foreground border-transparent"
+                  )}>
+                    <stat.icon className="h-5 w-5" />
+                  </div>
+                </CardHeader>
+              </Card>
+            )
+          })}
+        </section>
+      )}
 
       <section className="grid gap-4">
         <div className="grid gap-4">

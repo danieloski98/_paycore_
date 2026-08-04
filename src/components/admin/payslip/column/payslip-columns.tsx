@@ -68,7 +68,11 @@ export const payslipColumns: ColumnDef<Payslip>[] = [
     filterFn: "equals", // exact match for dropdown filter
     cell: ({ row }) => (
       <span className="ml-4 font-semibold">
-        ₦{row?.original?.basicSalary}
+        ₦{Number(row.original.netSalary || 0).toLocaleString(
+          "en-NG",
+          { minimumFractionDigits: 2 },
+
+        )}
       </span>
     ),
   },

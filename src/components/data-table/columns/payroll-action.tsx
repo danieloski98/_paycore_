@@ -18,71 +18,73 @@ interface Props {
   payroll: PayrollItem;
 }
 
-export function PayrollActions({
+export function ProcessPayrollButton({
+  payroll,
+}: Props) {
+  const { mutate: startProcessing } = useStartPayrollProcessing();
+
+  return (
+    <Button
+      onClick={(e) => {
+        e.stopPropagation();
+
+        if (payroll.status === "PENDING") {
+          startProcessing(payroll.id);
+        }
+      }}
+    >
+      {payroll.status === "PENDING"
+        ? "Start Processing"
+        : payroll.status === "PROCESSING"
+          ? "Cancel Processing"
+          : "Payroll Done"}
+    </Button>
+  );
+}
+
+export function PayrollMoreActions({
   payroll,
 }: Props) {
   const { openModal } = useModal();
-  const { mutate: startProcessing } = useStartPayrollProcessing();
-
 
   return (
-    <div className="flex items-center justify-between pr-6">
-      <Button
-        onClick={(e) => {
-          e.stopPropagation();
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild className="ml-6">
+        <Button variant="ghost" size="icon">
+          <MoreHorizontal className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
 
-          if (payroll.status === "PENDING") {
-            startProcessing(payroll.id);
-          }
-        }}
-      >
-        {payroll.status === "PENDING"
-          ? "Start Processing"
-          : payroll.status === "PROCESSING"
-            ? "Cancel Processing"
-            : "Payroll Done"}
-      </Button>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <MoreHorizontal className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation()
-              openModal("payroll-details", payroll)
-            }}
-          >
-            <Eye className="mr-2 h-4 w-4" />
-            View
-          </DropdownMenuItem>
-
-          <DropdownMenuItem onClick={(e) => {
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          onClick={(e) => {
             e.stopPropagation()
-            // openModal("add-payroll", payroll)
-            openModal("edit-payroll", { payroll: toPayrollDraft(payroll) })
-          }}>
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
-          </DropdownMenuItem>
+            openModal("payroll-details", payroll)
+          }}
+        >
+          <Eye className="mr-2 h-4 w-4" />
+          View
+        </DropdownMenuItem>
 
-          <DropdownMenuItem
-            onClick={(e) => {
-              e.stopPropagation()
-              openModal("delete-payroll", payroll)
-            }}
-            // className="text-red-600"
-            variant="destructive"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+        <DropdownMenuItem onClick={(e) => {
+          e.stopPropagation()
+          openModal("edit-payroll", { payroll: toPayrollDraft(payroll) })
+        }}>
+          <Pencil className="mr-2 h-4 w-4" />
+          Edit
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          onClick={(e) => {
+            e.stopPropagation()
+            openModal("delete-payroll", payroll)
+          }}
+          variant="destructive"
+        >
+          <Trash2 className="mr-2 h-4 w-4" />
+          Delete
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
