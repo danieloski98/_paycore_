@@ -164,6 +164,7 @@ function CreateCompanyAccount() {
                       type="button"
                       className="absolute right-3 top-1/2 -translate-y-1/2"
                       onClick={() => setShowPassword((prev) => !prev)}
+                      suppressHydrationWarning
                     >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4" />

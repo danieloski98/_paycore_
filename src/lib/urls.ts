@@ -97,5 +97,13 @@ export const URLS = {
         get_employee_dashboard: (employeeId: string) => `/analytics/dashboard/employee/${employeeId}`,
         get_active_payslips: (companyId: string) => `/analytics/payslips/active/${companyId}`,
         get_payroll_payslips: (payrollId: string) => `/analytics/payslips/${payrollId}`,
+    },
+    notifications: {
+        get_employee_notifications: (employeeId: string) => `/notifications/employee/${employeeId}`,
+        get_company_notifications: (companyId: string) => `/notifications/company/${companyId}`,
+        get_employee_unread_count: (employeeId: string) => `/notifications/employee/${employeeId}/unread/count`,
+        get_company_unread_count: (companyId: string) => `/notifications/company/${companyId}/unread/count`,
+        read_notification: (notificationId: string) => `/notifications/${notificationId}/read`,
+        delete_notification: (notificationId: string) => `/notifications/${notificationId}`,
     }
 }
